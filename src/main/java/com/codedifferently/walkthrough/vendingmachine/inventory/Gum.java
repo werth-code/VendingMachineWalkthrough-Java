@@ -26,3 +26,13 @@ public class Gum extends Product{
         return msg;
     }
 }
+
+//Trident Mint, 2.50
+//Trident Cinnamon, 2.50
+//Ice Breakers Sour Lemon, 2.50
+//Ice Breakers Bubble Gum, 2.50
+//Dentyne Spearmint Tub, 4.50
+//Dentyne Classic Mint Tub, 4.50
+//Juicy Fruit Classic, 3.00
+//TicTac Orange, 2.00
+//TicTac Mint,  2.00

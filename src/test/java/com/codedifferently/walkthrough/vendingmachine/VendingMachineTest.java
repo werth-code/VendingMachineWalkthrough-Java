@@ -7,5 +7,8 @@ public class VendingMachineTest {
 
     public static void main(String[] args) {
         logger.info("Start");
+
+        VendingMachine vend = new VendingMachine();
+        vend.start();
     }
 }
