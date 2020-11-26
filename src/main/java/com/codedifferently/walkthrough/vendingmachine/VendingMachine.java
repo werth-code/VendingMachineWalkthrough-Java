@@ -91,13 +91,14 @@ public class VendingMachine {
                     Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart...
 
                     if(productAvailable) { //if it is
-                        cart.put(usersProductChoice, 1);
+                        cart.put(usersProductChoice, productPrices.get(usersProductChoice));
                         System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
                     }
                     else {
                         listOfProducts.remove(usersProductChoice);
                         System.out.println("Sorry, That Product Is No Longer Available!");
                     }
+
                     break;
 
                 case "2" :
