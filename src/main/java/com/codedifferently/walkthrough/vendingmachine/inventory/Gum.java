@@ -1,11 +1,11 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
-// This is our public class for Gum and it Extends from the abstract class of Product.
+// This is our public class Gum and it Extends from the abstract class of Product.
 // We made it this way so that we could create multiple products with sharable features like name, price and a message.
 // This allows us to abstract some of our code so that all of our products, even in the future will follow our blueprint.
 public class Gum extends Product{
 
-// This is our constructor function which has name & prince parameters. This calls on our super or parent Product class implementation.
+// This is our constructor function which has name & price parameters. This calls on our super or parent Product class implementation.
 // When we create a new Gum(name, price) object - the name and price arguments are assigned to our name and price variables in the super.
     public Gum(String nameIn, Double priceIn){
         super(nameIn, priceIn);

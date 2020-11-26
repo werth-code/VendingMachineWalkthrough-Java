@@ -31,7 +31,6 @@ public class GumTest {
     // Our message will stay the same, although we could pass in a different msg with this constructor if needed.
     // Again we assert that our given string "Chew Chew, Yum!" equals our message by calling gumRef.toString().
 
-
     @Test
     public void messageTest(){
         //Given
