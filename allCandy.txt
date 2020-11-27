@@ -1,0 +1,8 @@
+A1,Peanut M&M’s,2.50
+A2,Reese’s PB Cups,2.25
+A3,Hershey Bar Classic,2.00
+A4,Peanut Chews,2.25
+A5,Skittles Original,2.25
+A6,Sour Patch Kids,2.25
+A7,EnjoyLife RiceMilk Chocolate Bar,3.00 
+A8,free2b Sun Cups,3.00

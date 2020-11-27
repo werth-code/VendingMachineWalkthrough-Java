@@ -34,5 +34,5 @@ public abstract class Product {
 
     public abstract String message();
 
-    public abstract ArrayList<Product> setIndividualProductMenu() throws IOException;
+    //public abstract ArrayList<Product> setIndividualProductMenu(String fileName) throws IOException;
 }

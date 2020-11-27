@@ -16,19 +16,20 @@ public class Gum extends Product{
         msg = "Chew Chew, Yum!";
     }
 
-    public ArrayList<Product> setIndividualProductMenu() throws IOException {
-        ArrayList<Product> productPrices = new ArrayList<>();
-        Stream<String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
-        products
-                .forEach(line -> {
-                    String[] splitLine = line.split(",");
-                    Gum gum = new Gum(splitLine[0], splitLine[1], Double.parseDouble(splitLine[2])); //TODO Set Up File This Way!
-
-                });
-        products.close();
-
-        return productPrices;
-    }
+//    public ArrayList<Product> setIndividualProductMenu(String fileName) throws IOException {
+//        ArrayList<Product> productPrices = new ArrayList<>();
+//        Stream<String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+//        products
+//                .forEach(line -> {
+//                    String[] splitLine = line.split(",");
+//                    Product product = new Gum(splitLine[0], splitLine[1], Double.parseDouble(splitLine[2]));
+//                    productPrices.add(product);
+//                    System.out.println(product.toString());
+//                });
+//        products.close();
+//
+//        return productPrices;
+//    }
 
     public Gum(){
         this("G1", "Rhino Chew", 0.0);

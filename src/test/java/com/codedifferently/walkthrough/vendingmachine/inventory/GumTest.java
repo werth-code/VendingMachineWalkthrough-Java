@@ -4,6 +4,8 @@ package com.codedifferently.walkthrough.vendingmachine.inventory;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.ArrayList;
+
 // Creating a public testable class named GumTest.
 public class GumTest {
 
@@ -26,6 +28,17 @@ public class GumTest {
         // Then
         Assert.assertEquals("Constructor test",expected, actual);
     }
+
+//    @Test
+//    public void setIndividualProductMenuTest(){
+//        //Given
+//
+//        //When
+//        ArrayList<Product> actual = setIndividualProductMenu("allGum.txt");
+//        //Then
+//        Assert.assertEquals(actual[0], "gobble wobble");
+//    }
+
 
     // Here we are creating a new object from Gum without passing any arguments into the constructor.
     // This should create a new Gum object using our default values from Gum class.

@@ -1,6 +1,5 @@
 package com.codedifferently.walkthrough.vendingmachine;
 
-import com.codedifferently.walkthrough.vendingmachine.inventory.Product;
 import menu.Menu;
 
 import java.io.IOException;
@@ -14,10 +13,10 @@ import java.util.stream.Stream;
 
 public class VendingMachine {
     private Scanner scanner;
-    private Map<String, Integer> inventoryRemaining;
-    private Map<String, Integer> productPrices;
-    private ArrayList<Product> products;
-    private Map<String, Integer> cart;
+    private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
+    private Map<String, Double> productPrices;
+    private Map<String, Double> cart;
+    private Double moneyProvided = 0.00;
     private Menu menu;
 
 
@@ -29,21 +28,28 @@ public class VendingMachine {
 
     public void setInventoryRemaining() throws IOException {
         inventoryRemaining = new HashMap<>();
-        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeNumberOfItems.txt"));
+        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCode.txt"));
         products
-        .forEach(productCode -> {
-            inventoryRemaining.put(productCode, 5);
-        });
+            .forEach(productCode -> {
+                inventoryRemaining.put(productCode, 5);
+            });
         products.close();
+    }
+
+    public Map<String, Integer> getInventory() {
+        return inventoryRemaining;
     }
 
     public void setProductPrices() throws IOException {
         productPrices = new HashMap<>();
         Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
         products
-                .forEach(productCode -> {
-                    // comma separated values with File.lines??
-                     productPrices.put(productCode, 5);
+                .forEach(product -> {
+                    //split the txt so we have a hash with string, double
+                    String[] splitLine = product.split(",");
+                    String productCode = splitLine[0];
+                    Double productPrice = Double.parseDouble(splitLine[1]);
+                    productPrices.put(productCode, productPrice);
                 });
         products.close();
     }
@@ -55,18 +61,45 @@ public class VendingMachine {
         return false;
     }
 
+    public ArrayList<String> setInitialOptions() {
+        ArrayList<String> initialOptions = new ArrayList<>();
+        initialOptions.add("(1) Display Vending Items");
+        initialOptions.add("(2) Purchase");
+        initialOptions.add("(3) Exit");
+        return initialOptions;
+    }
+
+    public ArrayList<String> setPurchaseOptions() {
+        ArrayList<String> purchaseOptions = new ArrayList<>();
+        purchaseOptions.add("(1) Feed Money");
+        purchaseOptions.add("(2) Select Product");
+        purchaseOptions.add("(3) Finish Transaction");
+        return purchaseOptions;
+    }
+
+    public String getAllProductsForDisplay(String fileName) throws IOException {
+//      ArrayList<String> listOfProducts = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+        products
+                .forEach(product -> {
+//                  listOfProducts.add(product);
+                    stringBuilder.append(product);
+                    System.out.println(product);
+                });
+        products.close();
+        System.out.println("\n");
+        return stringBuilder.toString();
+    }
+
 
     public void start() throws IOException {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
-
-        ArrayList<String> initialOptions = new ArrayList<>();
-        initialOptions.add("(1) Display Vending Items");
-        initialOptions.add("(2) Purchase");
-        initialOptions.add("(3) Exit");
-
-        menu = new Menu(initialOptions);
+        menu = new Menu(setInitialOptions());
+        setInventoryRemaining();
+        setProductPrices();
 
         while(flag) {
 
@@ -78,14 +111,11 @@ public class VendingMachine {
 
             switch(input) {
                 case "1" :
-                    ArrayList<String> listOfProducts = new ArrayList<>();
-                    Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
-                    products
-                            .forEach(product -> {
-                                listOfProducts.add(product);
-                                System.out.println(product);
-                            });
-                    products.close();
+                    getAllProductsForDisplay("allCandy.txt");
+                    getAllProductsForDisplay("allChips.txt");
+                    getAllProductsForDisplay("allDrinks.txt");
+                    getAllProductsForDisplay("allGum.txt");
+
                     // Instead of creating a new Menu object we are just SOUT each product as we create it.. This may need to be refactored.
                     System.out.println("Choose A Product By Typing ID Number");
 
@@ -93,6 +123,7 @@ public class VendingMachine {
                     Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart...
 
                     if(productAvailable) { //if it is
+                        cart = new HashMap<>();
                         cart.put(usersProductChoice, productPrices.get(usersProductChoice));
                         Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
                         inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
@@ -100,19 +131,33 @@ public class VendingMachine {
                         System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
                     }
                     else {
-                        listOfProducts.remove(usersProductChoice);
                         System.out.println("Sorry, That Product Is No Longer Available!");
                     }
 
                     break;
 
                 case "2" : // TODO: 11/26/20 THIS IS OUR NEXT ITEM. WE HAVE POTENTIALLY ADDED A PRODUCT TO CART AND NEED TO CHECKOUT.
-                    System.out.println("Hey");
+                    Double total = 0.0;
+                    for(Double val : cart.values()) {
+                        total += val;
+                    }
+
+                    setPurchaseOptions();
+                    while (flag) {
+                        for (String option : menu.getOptions()) {
+                            System.out.println(option);
+                        }
+
+                        String checkoutInput = scanner.next();
+                    }
+
+                    //ADD FUNDS?
                     //bring up purchasing menu
 
                 case "3" :
                     flag = false;
                     System.out.println("Bye Bye Friend.");
+                    break;
 
                 default:
                     System.out.println("Try Again");

@@ -1,0 +1,8 @@
+D1,Aquifina Bottled Water,2.00 
+D2,LaColumb Almond Milk Mocha,3.50
+D3,Coke Classic,2.50
+D4,Sprite,2.50
+D5,Mountain Dew,2.50
+D6,Minute Maid Orange Juice,3.00
+D7,Minute Maid Apple Juice,3.00
+D8,Tazo Black Tea,3.00
