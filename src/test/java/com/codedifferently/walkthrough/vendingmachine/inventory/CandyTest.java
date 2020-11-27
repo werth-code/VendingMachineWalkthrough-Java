@@ -8,12 +8,13 @@ import org.junit.Test;
 public class CandyTest {
 
     Candy candy;
+    String id = "A1";
     String name = "M&M's";
     Double price = 1.50;
 
     @Before
     public void setUp() {
-        candy = new Candy(name, price);
+        candy = new Candy(id, name, price);
     }
 
     @Test

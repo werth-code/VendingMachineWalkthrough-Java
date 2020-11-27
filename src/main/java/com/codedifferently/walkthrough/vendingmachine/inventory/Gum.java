@@ -1,31 +1,61 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
-// This is our public class Gum and it Extends from the abstract class of Product.
-// We made it this way so that we could create multiple products with sharable features like name, price and a message.
-// This allows us to abstract some of our code so that all of our products, even in the future will follow our blueprint.
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Stream;
+
+
 public class Gum extends Product{
 
-// This is our constructor function which has name & price parameters. This calls on our super or parent Product class implementation.
-// When we create a new Gum(name, price) object - the name and price arguments are assigned to our name and price variables in the super.
-    public Gum(String nameIn, Double priceIn){
-        super(nameIn, priceIn);
-        // msg is passed to our Product super class's msg variable. NOTE - this is different for each product and sends in a unique message.
+    public Gum(String id, String nameIn, Double priceIn){
+        super(id, nameIn, priceIn);
         msg = "Chew Chew, Yum!";
     }
 
-    // This is a default constructor function which can be called by creating a new Gum() and not passing in any arguments.
-    // The arguments will be set to the default values or Rhino Chew and 0.0.
-    public Gum(){
-        this("Rhino Chew", 0.0);
+    public ArrayList<Product> setIndividualProductMenu() throws IOException {
+        ArrayList<Product> productPrices = new ArrayList<>();
+        Stream<String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
+        products
+                .forEach(line -> {
+                    String[] splitLine = line.split(",");
+                    Gum gum = new Gum(splitLine[0], splitLine[1], Double.parseDouble(splitLine[2])); //TODO Set Up File This Way!
+
+                });
+        products.close();
+
+        return productPrices;
     }
 
-    // Here we are overriding an existing method. This changes the behavior of the method to return our msg variable when called.
-    // This is an example of polymorphism.
+    public Gum(){
+        this("G1", "Rhino Chew", 0.0);
+    }
+
     @Override
     public String message() {
         return msg;
     }
 }
+
+
+// This is our public class Gum and it Extends from the abstract class of Product.
+// We made it this way so that we could create multiple products with sharable features like name, price and a message.
+// This allows us to abstract some of our code so that all of our products, even in the future will follow our blueprint.
+
+// This is our constructor function which has name & price parameters. This calls on our super or parent Product class implementation.
+// When we create a new Gum(name, price) object - the name and price arguments are assigned to our name and price variables in the super.
+
+// msg is passed to our Product super class's msg variable. NOTE - this is different for each product and sends in a unique message.
+
+
+// This is a default constructor function which can be called by creating a new Gum() and not passing in any arguments.
+// The arguments will be set to the default values or Rhino Chew and 0.0.
+
+// Here we are overriding an existing method. This changes the behavior of the method to return our msg variable when called.
+// This is an example of polymorphism.
 
 //Trident Mint, 2.50
 //Trident Cinnamon, 2.50

@@ -1,9 +1,15 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
+import java.util.ArrayList;
+
 public class Candy extends Product {
-    public Candy (String nameIn, Double priceIn){
-        super(nameIn, priceIn);
+    public Candy (String id, String nameIn, Double priceIn){
+        super(id, nameIn, priceIn);
         msg = "Munch Munch, Yum!";
+    }
+
+    public ArrayList<Product> setIndividualProductMenu() {
+        return new ArrayList<>();
     }
 
     @Override

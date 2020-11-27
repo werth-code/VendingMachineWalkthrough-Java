@@ -1,9 +1,15 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
+import java.util.ArrayList;
+
 public class Chip extends Product {
-    public Chip(String nameIn, Double priceIn){
-        super(nameIn, priceIn);
+    public Chip(String id, String nameIn, Double priceIn){
+        super(id, nameIn, priceIn);
         msg = "Crunch Crunch, Yum!";
+    }
+
+    public ArrayList<Product> setIndividualProductMenu() {
+        return new ArrayList<>();
     }
 
     @Override

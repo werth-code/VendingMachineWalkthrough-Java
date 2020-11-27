@@ -1,5 +1,6 @@
 package com.codedifferently.walkthrough.vendingmachine;
 
+import com.codedifferently.walkthrough.vendingmachine.inventory.Product;
 import menu.Menu;
 
 import java.io.IOException;
@@ -15,6 +16,7 @@ public class VendingMachine {
     private Scanner scanner;
     private Map<String, Integer> inventoryRemaining;
     private Map<String, Integer> productPrices;
+    private ArrayList<Product> products;
     private Map<String, Integer> cart;
     private Menu menu;
 
@@ -92,6 +94,9 @@ public class VendingMachine {
 
                     if(productAvailable) { //if it is
                         cart.put(usersProductChoice, productPrices.get(usersProductChoice));
+                        Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
+                        inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
+
                         System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
                     }
                     else {
@@ -101,7 +106,7 @@ public class VendingMachine {
 
                     break;
 
-                case "2" :
+                case "2" : // TODO: 11/26/20 THIS IS OUR NEXT ITEM. WE HAVE POTENTIALLY ADDED A PRODUCT TO CART AND NEED TO CHECKOUT.
                     System.out.println("Hey");
                     //bring up purchasing menu
 

@@ -8,12 +8,13 @@ import org.junit.Test;
 public class ChipTest {
 
     Chip chip;
+    String id = "A1";
     String name = "Bugles";
     Double price = 2.50;
 
     @Before
     public void setUp() {
-        chip = new Chip(name, price);
+        chip = new Chip(id, name, price);
     }
 
     @Test
