@@ -20,7 +20,7 @@ public class VendingMachineTest {
         vendingMachine = new VendingMachine();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         logger.info("Start");
 
         VendingMachine vend = new VendingMachine();

@@ -16,6 +16,7 @@ public class VendingMachine {
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Double> productPrices;
     private Map<String, Double> cart;
+    private Double total = 0.00;
     private Double moneyProvided = 0.00;
     private Menu menu;
 
@@ -46,7 +47,7 @@ public class VendingMachine {
         products
                 .forEach(product -> {
                     //split the txt so we have a hash with string, double
-                    String[] splitLine = product.split(",");
+                    String[] splitLine = product.split(","); // split on pipe "\\|"
                     String productCode = splitLine[0];
                     Double productPrice = Double.parseDouble(splitLine[1]);
                     productPrices.put(productCode, productPrice);
@@ -72,9 +73,17 @@ public class VendingMachine {
     public ArrayList<String> setPurchaseOptions() {
         ArrayList<String> purchaseOptions = new ArrayList<>();
         purchaseOptions.add("(1) Feed Money");
-        purchaseOptions.add("(2) Select Product");
-        purchaseOptions.add("(3) Finish Transaction");
+        purchaseOptions.add("(2) Add Additional Products");
+        purchaseOptions.add("(3) Exit");
         return purchaseOptions;
+    }
+
+    public ArrayList<String> setAcceptFinalPaymentOptions() {
+        ArrayList<String> finalPurchaseOptions = new ArrayList<>();
+        finalPurchaseOptions.add("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00");
+        finalPurchaseOptions.add("Press  |   p   | To Process Transaction.");
+        finalPurchaseOptions.add("Press |   q   | To Add Additional Snacks");
+        return finalPurchaseOptions;
     }
 
     public String getAllProductsForDisplay(String fileName) throws IOException {
@@ -92,8 +101,94 @@ public class VendingMachine {
         return stringBuilder.toString();
     }
 
+    public Double calculateCartTotal() {
+        for(Double val : cart.values()) {
+            total += val;
+        }
+        return total;
+    }
 
-    public void start() throws IOException {
+    public Double acceptFunds(Double fundsFromUser) throws Exception {
+        if(fundsFromUser <= 0 || fundsFromUser.isNaN()) throw new IllegalArgumentException("Not A Valid Amount. Incoming Funds Must Be Greater Than 0.");
+        moneyProvided += fundsFromUser;
+        return moneyProvided;
+    }
+
+    public Boolean enoughFundingProvided() {
+        if (moneyProvided >= total) return true;
+        return false;
+    }
+
+    // TODO: 11/28/20
+    public void startPurchase() throws Exception {
+
+        Double customerTotal = calculateCartTotal();
+        System.out.println("Your Total Is $" + customerTotal);
+
+        for (String option : setPurchaseOptions()) {
+            System.out.println(option);
+        }
+
+        String checkoutInput = scanner.next();
+// TODO: 11/28/20 create a menu object for 3 sout
+            switch (checkoutInput) {
+                case "1" : // (1) Feed Money
+
+                    Menu purchaseMenu = new Menu(setAcceptFinalPaymentOptions());
+                    for(String option : purchaseMenu.getOptions()) {
+                        System.out.println(option);
+                    }
+
+                    String fundsInput = scanner.next();
+
+                    acceptFunds(Double.parseDouble(fundsInput));
+                    System.out.println(moneyProvided);
+
+                    if(fundsInput.equalsIgnoreCase("q")) displayVendingItems();
+                    if(fundsInput.equalsIgnoreCase("p") && enoughFundingProvided()) // finishTransaction();
+                    break;
+
+                    //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
+                    //All chip items print "Crunch Crunch, Yum!"
+                    //All candy items print "Munch Munch, Yum!"
+                    //All drink items print "Glug Glug, Yum!"
+                    //All gum items print "Chew Chew, Yum!"
+
+                case "2" : // (2) Add Additional Products
+                    displayVendingItems();
+                default:
+                    System.out.println("Try Again");
+
+        }
+    }
+
+    public void displayVendingItems() throws IOException {
+        getAllProductsForDisplay("allCandy.txt");
+        getAllProductsForDisplay("allChips.txt");
+        getAllProductsForDisplay("allDrinks.txt");
+        getAllProductsForDisplay("allGum.txt");
+
+        // Instead of creating a new Menu object we are just SOUT each product as we create it.. This may need to be refactored.
+        System.out.println("Type ID Number To Add Product To Your Cart!");
+
+        String usersProductChoice = scanner.next();
+        Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart.
+//new func
+        if(productAvailable) {
+            cart = new HashMap<>();
+            cart.put(usersProductChoice, productPrices.get(usersProductChoice));
+            Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
+            inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
+//user prod choice should show product not just "G1" code
+            System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
+        }
+        else {
+            System.out.println("Sorry, That Product Is Sold Out Or Not Available!");
+        }
+    }
+
+
+    public void start() throws Exception {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
@@ -109,78 +204,27 @@ public class VendingMachine {
 
             String input = scanner.next();
 
-            switch(input) {
-                case "1" :
-                    getAllProductsForDisplay("allCandy.txt");
-                    getAllProductsForDisplay("allChips.txt");
-                    getAllProductsForDisplay("allDrinks.txt");
-                    getAllProductsForDisplay("allGum.txt");
+            switch(input) { // We press 1 and want to see all products
 
-                    // Instead of creating a new Menu object we are just SOUT each product as we create it.. This may need to be refactored.
-                    System.out.println("Choose A Product By Typing ID Number");
-
-                    String usersProductChoice = scanner.next(); //get the users choice
-                    Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart...
-
-                    if(productAvailable) { //if it is
-                        cart = new HashMap<>();
-                        cart.put(usersProductChoice, productPrices.get(usersProductChoice));
-                        Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
-                        inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
-
-                        System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
-                    }
-                    else {
-                        System.out.println("Sorry, That Product Is No Longer Available!");
-                    }
-
+                case "1" : // (1) Display Vending Items
+                    displayVendingItems();
                     break;
-
-                case "2" : // TODO: 11/26/20 THIS IS OUR NEXT ITEM. WE HAVE POTENTIALLY ADDED A PRODUCT TO CART AND NEED TO CHECKOUT.
-                    Double total = 0.0;
-                    for(Double val : cart.values()) {
-                        total += val;
-                    }
-
-                    setPurchaseOptions();
-                    while (flag) {
-                        for (String option : menu.getOptions()) {
-                            System.out.println(option);
-                        }
-
-                        String checkoutInput = scanner.next();
-                    }
-
-                    //ADD FUNDS?
-                    //bring up purchasing menu
-
-                case "3" :
+                case "2" : // (2) Purchase
+                    startPurchase();
+                    break;
+                case "3" : // (3) Exit
                     flag = false;
                     System.out.println("Bye Bye Friend.");
                     break;
-
                 default:
                     System.out.println("Try Again");
             }
-            // TODO: 11/26/20
-            // if user enters a correct id#
-            // check for available funds?
-            // fetch that product from our inventory HashMap.
         }
         scanner.close();
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         VendingMachine vendingMachine = new VendingMachine();
         vendingMachine.start();
     }
 }
-
-
-//    Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/allProducts.txt"));
-//    products
-//        .forEach(product -> {
-//                    System.out.println(product);
-//                });
-//    products.close();
-//
