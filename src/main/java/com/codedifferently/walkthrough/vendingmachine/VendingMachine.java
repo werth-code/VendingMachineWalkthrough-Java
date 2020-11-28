@@ -147,7 +147,7 @@ public class VendingMachine {
                 case "1" : // (1) Feed Money
 
                     //Set Up Accept Funds Menu
-                    Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "(2) Add Additional Products", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks"));
+                    Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks."));
                     for(String option : acceptFundsMenu.getOptions()) {
                         System.out.println(option);
                     }

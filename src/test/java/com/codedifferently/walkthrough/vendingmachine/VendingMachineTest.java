@@ -29,7 +29,6 @@ public class VendingMachineTest {
         vend.start();
     }
 
-
     @Test
     public void getAllProductsForDisplayTest() throws IOException {
         //GIVEN
@@ -127,9 +126,9 @@ public class VendingMachineTest {
     public void testSetAcceptFinalPaymentOptions() {
         //GIVEN
         //WHEN
-        System.out.println(vendingMachine.setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks").toString());
-        String actual = vendingMachine.setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks").toString();
-        String expected = "[Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00, Press  |   p   | To Process Transaction., Press |   q   | To Add Additional Snacks]";
+        System.out.println(vendingMachine.setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks.").toString());
+        String actual =    vendingMachine.setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks.").toString();
+        String expected = "[Please Add Funds, Press |   1   |  for $1., Press |   5   |  for $5., Press |   10  |  for $10., Press |   p   |  To Process Transaction., Press |   q   |  To Add Additional Snacks.]";
         //THEN
         Assert.assertEquals(expected, actual);
     }
