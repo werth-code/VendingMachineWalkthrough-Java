@@ -14,7 +14,7 @@ public class DrinkTest {
 
     @Before
     public void setUp() {
-        drink = new Drink(id, name, price);
+        drink = new Drink(name, price);
     }
 
     @Test

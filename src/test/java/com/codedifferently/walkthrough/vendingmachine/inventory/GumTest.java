@@ -17,10 +17,9 @@ public class GumTest {
     @Test
     public void constructorTest(){
         // Given
-        String id = "A1";
         String name = "Big Red";
         Double price = 0.25;
-        Gum gumRef = new Gum(id, name, price);
+        Gum gumRef = new Gum(name, price);
 
         // When
         String expected = "Big Red 0.25";

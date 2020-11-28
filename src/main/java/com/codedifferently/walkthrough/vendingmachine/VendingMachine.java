@@ -1,5 +1,6 @@
 package com.codedifferently.walkthrough.vendingmachine;
 
+import com.codedifferently.walkthrough.vendingmachine.inventory.*;
 import menu.Menu;
 
 import java.io.IOException;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 public class VendingMachine {
     private Scanner scanner;
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
+    private Map<String, Product> allProductsByID;
     private Map<String, Double> productPrices;
     private Map<String, Double> cart;
     private Double total = 0.00;
@@ -23,11 +25,11 @@ public class VendingMachine {
 
     public VendingMachine() throws IOException {
         this.scanner = new Scanner(System.in);
-        setInventoryRemaining();
+        setInventory();
         setProductPrices();
     }
 
-    public void setInventoryRemaining() throws IOException {
+    public void setInventory() throws IOException {
         inventoryRemaining = new HashMap<>();
         Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCode.txt"));
         products
@@ -53,6 +55,98 @@ public class VendingMachine {
                     productPrices.put(productCode, productPrice);
                 });
         products.close();
+    }
+
+    public String getAllProductsForDisplay(String fileName) throws IOException {
+//      ArrayList<String> listOfProducts = new ArrayList<>();
+        StringBuilder stringBuilder = new StringBuilder();
+        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+        products
+                .forEach(product -> {
+                    //listOfProducts.add(product);
+                    stringBuilder.append(product);
+                    System.out.println(product);
+                });
+        products.close();
+        System.out.println("\n");
+        return stringBuilder.toString();
+    }
+
+    // TODO: 11/28/20 This needs to be one method which takes in type Product and allows me to create Candy, Chip, Drink & Gum classes.
+    public void setIDtoCandyProducts(String fileName) throws IOException {
+        allProductsByID = new HashMap<>();
+        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+        products
+                .forEach(line -> {
+                    String[] split = line.split("\\|");
+                    allProductsByID.put(split[0], new Product(split[1], Double.parseDouble(split[2])) {
+                        @Override
+                        public String message() {
+                            if(split[1].charAt(0) == 'A') return "Munch Munch, Yum!";
+                            else if(split[1].charAt(0) == 'C') return "Crunch Crunch, Yum!";
+                            else if (split[2].charAt(0) == 'D') return "Glug Glug, Yum!";
+                            else return "Chew Chew, Yum!";
+                        }
+                    });
+                });
+        products.close();
+    }
+
+//    public void setIDtoChipProducts(String fileName) throws IOException {
+//        allProductsByID = new HashMap<>();
+//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+//        products
+//                .forEach(line -> {
+//                    String[] split = line.split("\\|");
+//                    allProductsByID.put(split[0], new Chip(split[1], Double.parseDouble(split[2])));
+//                });
+//        products.close();
+//    }
+
+//    public void setIDtoDrinkProducts(String fileName) throws IOException {
+//        allProductsByID = new HashMap<>();
+//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+//        products
+//                .forEach(line -> {
+//                    String[] split = line.split("\\|");
+//                    allProductsByID.put(split[0], new Drink(split[1], Double.parseDouble(split[2])));
+//                });
+//        products.close();
+//    }
+//
+//    public void setIDtoGumProducts(String fileName) throws IOException {
+//        allProductsByID = new HashMap<>();
+//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+//        products
+//                .forEach(line -> {
+//                    String[] split = line.split("\\|");
+//                    allProductsByID.put(split[0], new Gum(split[1], Double.parseDouble(split[2])));
+//                });
+//        products.close();
+//    }
+
+//    public void setIDtoGumProducts(String fileName, Class<? extends Product> foodItem) throws IOException {
+//        allProductsByID = new HashMap<>();
+//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
+//        products
+//                .forEach(line -> {
+//                    String[] split = line.split("\\|");
+//                    allProductsByID.put(split[0], new foodItem(split[1], Double.parseDouble(split[2])));
+//                });
+//        products.close();
+//    }
+
+    // TODO: 11/28/20 This method is for testing. Change this to bring back entire hashMap-uh, not single value.
+    public String getIDtoTest(String value) {
+        return allProductsByID.get(value).toString();
+    }
+
+
+    public Double calculateCartTotal() {
+        for(Double val : cart.values()) {
+            total += val;
+        }
+        return total;
     }
 
     public Boolean checkForProduct(String productID) {
@@ -86,27 +180,6 @@ public class VendingMachine {
         return finalPurchaseOptions;
     }
 
-    public String getAllProductsForDisplay(String fileName) throws IOException {
-//      ArrayList<String> listOfProducts = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-        products
-                .forEach(product -> {
-//                  listOfProducts.add(product);
-                    stringBuilder.append(product);
-                    System.out.println(product);
-                });
-        products.close();
-        System.out.println("\n");
-        return stringBuilder.toString();
-    }
-
-    public Double calculateCartTotal() {
-        for(Double val : cart.values()) {
-            total += val;
-        }
-        return total;
-    }
 
     public Double acceptFunds(Double fundsFromUser) throws Exception {
         if(fundsFromUser <= 0 || fundsFromUser.isNaN()) throw new IllegalArgumentException("Not A Valid Amount. Incoming Funds Must Be Greater Than 0.");
@@ -125,17 +198,20 @@ public class VendingMachine {
         Double customerTotal = calculateCartTotal();
         System.out.println("Your Total Is $" + customerTotal);
 
-        for (String option : setPurchaseOptions()) {
+        //Set Up Purchase Menu
+        Menu purchaseOptionsMenu = new Menu(setPurchaseOptions());
+        for (String option : purchaseOptionsMenu.getOptions()) {
             System.out.println(option);
         }
 
         String checkoutInput = scanner.next();
-// TODO: 11/28/20 create a menu object for 3 sout
+        
             switch (checkoutInput) {
                 case "1" : // (1) Feed Money
 
-                    Menu purchaseMenu = new Menu(setAcceptFinalPaymentOptions());
-                    for(String option : purchaseMenu.getOptions()) {
+                    //Set Up Accept Funds Menu
+                    Menu acceptFundsMenu = new Menu(setAcceptFinalPaymentOptions());
+                    for(String option : acceptFundsMenu.getOptions()) {
                         System.out.println(option);
                     }
 
@@ -148,6 +224,7 @@ public class VendingMachine {
                     if(fundsInput.equalsIgnoreCase("p") && enoughFundingProvided()) // finishTransaction();
                     break;
 
+                    // TODO: 11/28/20 Set Up Products As Class Items - Finalize Transaction. 
                     //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
                     //All chip items print "Crunch Crunch, Yum!"
                     //All candy items print "Munch Munch, Yum!"
@@ -193,7 +270,7 @@ public class VendingMachine {
 
         boolean flag = true;
         menu = new Menu(setInitialOptions());
-        setInventoryRemaining();
+        setInventory();
         setProductPrices();
 
         while(flag) {

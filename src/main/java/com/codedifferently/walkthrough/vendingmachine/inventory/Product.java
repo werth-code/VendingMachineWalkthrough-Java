@@ -5,18 +5,17 @@ import java.util.ArrayList;
 
 public abstract class Product {
 
-    private String id;
     private String name;
     private Double price;
+    private Integer quantity = 5;
     protected String msg;
 
-    public Product(String id, String name, Double priceIn){
+    public Product(String name, Double priceIn){
         this.name = name;
         this.price = priceIn;
     }
 
-    public String getId() {
-        return id;
+    public Product(double parseDouble) {
     }
 
     public String getName(){
@@ -29,7 +28,7 @@ public abstract class Product {
 
     @Override
     public String toString(){
-        return id + " " + name + " " + price;
+        return name + " " + price;
     }
 
     public abstract String message();

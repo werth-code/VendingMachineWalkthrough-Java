@@ -1,38 +1,15 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.stream.Stream;
-
 
 public class Gum extends Product{
 
-    public Gum(String id, String nameIn, Double priceIn){
-        super(id, nameIn, priceIn);
+    public Gum(String nameIn, Double priceIn){
+        super(nameIn, priceIn);
         msg = "Chew Chew, Yum!";
     }
 
-//    public ArrayList<Product> setIndividualProductMenu(String fileName) throws IOException {
-//        ArrayList<Product> productPrices = new ArrayList<>();
-//        Stream<String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-//        products
-//                .forEach(line -> {
-//                    String[] splitLine = line.split(",");
-//                    Product product = new Gum(splitLine[0], splitLine[1], Double.parseDouble(splitLine[2]));
-//                    productPrices.add(product);
-//                    System.out.println(product.toString());
-//                });
-//        products.close();
-//
-//        return productPrices;
-//    }
-
     public Gum(){
-        this("G1", "Rhino Chew", 0.0);
+        this("Rhino Chew", 0.0);
     }
 
     @Override
