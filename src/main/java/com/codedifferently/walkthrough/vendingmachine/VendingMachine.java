@@ -42,6 +42,7 @@ public class VendingMachine {
         return inventoryRemaining;
     }
 
+    // TODO: 11/28/20 This method needs to be removed and taken out of start.. 
     public void setProductPrices() throws IOException {
         productPrices = new HashMap<>();
         Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
@@ -85,6 +86,7 @@ public class VendingMachine {
         return allProductsByID.get(value).toString();
     }
 
+    //Todo This method will keep adding total everytime you leave and return to checkout. Not Working correctly!
     public Double calculateCartTotal() {
         for(Double val : cart.values()) {
             total += val;
@@ -107,6 +109,20 @@ public class VendingMachine {
         return menuOptions;
     }
 
+    public void purchaseOptionsMenu() {
+        Menu purchaseOptionsMenu = new Menu(setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit"));
+        for (String option : purchaseOptionsMenu.getOptions()) {
+            System.out.println(option);
+        }
+    }
+
+    public void acceptFundsMenu() {
+        Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks."));
+        for(String option : acceptFundsMenu.getOptions()) {
+            System.out.println(option);
+        }
+    }
+
     public Double acceptFunds(Double fundsFromUser) throws Exception {
         if(fundsFromUser <= 0 || fundsFromUser.isNaN()) throw new IllegalArgumentException("Not A Valid Amount. Incoming Funds Must Be Greater Than 0.");
         moneyProvided += fundsFromUser;
@@ -118,29 +134,29 @@ public class VendingMachine {
         return false;
     }
 
+    public void createCart(String usersProductChoice) {
+        cart = new HashMap<>();
+        cart.put(usersProductChoice, productPrices.get(usersProductChoice));
+    }
+
+    public void removeFromInventory(String usersProductChoice) {
+        Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
+        inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
+    }
+
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
 
         Double customerTotal = calculateCartTotal();
+
         System.out.println("Your Total Is $" + customerTotal);
-
-        //Set Up Purchase Menu
-        Menu purchaseOptionsMenu = new Menu(setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit"));
-        for (String option : purchaseOptionsMenu.getOptions()) {
-            System.out.println(option);
-        }
-
+        purchaseOptionsMenu();
         String checkoutInput = scanner.next();
         
             switch (checkoutInput) {
                 case "1" : // (1) Feed Money
 
-                    //Set Up Accept Funds Menu
-                    Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks."));
-                    for(String option : acceptFundsMenu.getOptions()) {
-                        System.out.println(option);
-                    }
-
+                    acceptFundsMenu();
                     String fundsInput = scanner.next();
 
                     acceptFunds(Double.parseDouble(fundsInput));
@@ -168,27 +184,25 @@ public class VendingMachine {
     public void displayVendingItems() throws IOException {
         getAllProductsForDisplay("allProducts.txt");
 
-
-        // Instead of creating a new Menu object we are just SOUT each product as we create it.. This may need to be refactored.
         System.out.println("Type ID Number To Add Product To Your Cart!");
-
         String usersProductChoice = scanner.next();
+
         Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart.
-//new func
+
         if(productAvailable) {
-            cart = new HashMap<>();
-            cart.put(usersProductChoice, productPrices.get(usersProductChoice));
-            Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
-            inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
-//user prod choice should show product not just "G1" code
-            System.out.println(usersProductChoice + " Has Been Added To Your Cart!");
+            createCart(usersProductChoice);
+            removeFromInventory(usersProductChoice);
+
+            //Show user what they just added to cart
+            System.out.println(allProductsByID.get(usersProductChoice).toString());
+            System.out.println("Has Been Added To Your Cart!");
         }
         else {
             System.out.println("Sorry, That Product Is Sold Out Or Not Available!");
         }
     }
 
-
+    // TODO: 11/28/20 Need to implement finalize transaction and receipt. 
     public void start() throws Exception {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 

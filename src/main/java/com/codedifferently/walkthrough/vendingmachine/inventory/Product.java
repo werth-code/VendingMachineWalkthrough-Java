@@ -28,7 +28,7 @@ public abstract class Product {
 
     @Override
     public String toString(){
-        return name + " " + price;
+        return name + " $" + price;
     }
 
     public abstract String message();
