@@ -26,7 +26,6 @@ public class VendingMachine {
     public VendingMachine() throws IOException {
         this.scanner = new Scanner(System.in);
         setInventory();
-        setProductPrices();
     }
 
     public void setInventory() throws IOException {
@@ -57,21 +56,6 @@ public class VendingMachine {
         products.close();
     }
 
-    public String getAllProductsForDisplay(String fileName) throws IOException {
-//      ArrayList<String> listOfProducts = new ArrayList<>();
-        StringBuilder stringBuilder = new StringBuilder();
-        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-        products
-                .forEach(product -> {
-                    //listOfProducts.add(product);
-                    stringBuilder.append(product);
-                    System.out.println(product);
-                });
-        products.close();
-        System.out.println("\n");
-        return stringBuilder.toString();
-    }
-
     public void setIDtoProducts(String fileName) throws IOException {
         allProductsByID = new HashMap<>();
         Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
@@ -89,6 +73,11 @@ public class VendingMachine {
                     });
                 });
         products.close();
+    }
+
+    // TODO: 11/28/20 Get this working. Showing each element multiple times?
+    public void getAllProductsForDisplay(String fileName) throws IOException {
+        allProductsByID.forEach((k,v) -> System.out.println(k + " " + v.toString()));
     }
 
     // TODO: 11/28/20 This method is for testing. Change this to bring back entire hashMap-uh, not single value.
@@ -209,6 +198,7 @@ public class VendingMachine {
         menu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
         setInventory();
         setProductPrices();
+        setIDtoProducts("allProducts.txt");
 
         while(flag) {
 
