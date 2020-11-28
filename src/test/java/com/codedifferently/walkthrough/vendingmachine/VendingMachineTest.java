@@ -88,7 +88,7 @@ public class VendingMachineTest {
     public void setIDtoProductsTest() throws IOException {
         //GIVEN Before
         allProductsByID = new HashMap<>();
-        vendingMachine.setIDtoCandyProducts("allCandy.txt");
+        vendingMachine.setIDtoProducts("allProducts.txt");
         //WHEN
         String actual = vendingMachine.getIDtoTest("A4");
         String expected = "Peanut Chews 2.25";
@@ -105,8 +105,8 @@ public class VendingMachineTest {
     public void testSetInitialOptions() {
         //GIVEN
         //WHEN
-        System.out.println(vendingMachine.setInitialOptions().toString());
-        String actual = vendingMachine.setInitialOptions().toString();
+        System.out.println(vendingMachine.setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
+        String actual = vendingMachine.setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit").toString();
         String expected = "[(1) Display Vending Items, (2) Purchase, (3) Exit]";
         //THEN
         Assert.assertEquals(expected, actual);
@@ -116,8 +116,8 @@ public class VendingMachineTest {
     public void testSetPurchaseOptions() {
         //GIVEN
         //WHEN
-        System.out.println(vendingMachine.setPurchaseOptions().toString());
-        String actual = vendingMachine.setPurchaseOptions().toString();
+        System.out.println(vendingMachine.setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit"));
+        String actual = vendingMachine.setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit").toString();
         String expected = "[(1) Feed Money, (2) Add Additional Products, (3) Exit]";
         //THEN
         Assert.assertEquals(expected, actual);
@@ -127,8 +127,8 @@ public class VendingMachineTest {
     public void testSetAcceptFinalPaymentOptions() {
         //GIVEN
         //WHEN
-        System.out.println(vendingMachine.setAcceptFinalPaymentOptions().toString());
-        String actual = vendingMachine.setAcceptFinalPaymentOptions().toString();
+        System.out.println(vendingMachine.setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks").toString());
+        String actual = vendingMachine.setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks").toString();
         String expected = "[Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00, Press  |   p   | To Process Transaction., Press |   q   | To Add Additional Snacks]";
         //THEN
         Assert.assertEquals(expected, actual);

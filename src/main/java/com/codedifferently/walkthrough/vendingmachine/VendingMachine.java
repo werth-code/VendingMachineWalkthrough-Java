@@ -72,8 +72,7 @@ public class VendingMachine {
         return stringBuilder.toString();
     }
 
-    // TODO: 11/28/20 This needs to be one method which takes in type Product and allows me to create Candy, Chip, Drink & Gum classes.
-    public void setIDtoCandyProducts(String fileName) throws IOException {
+    public void setIDtoProducts(String fileName) throws IOException {
         allProductsByID = new HashMap<>();
         Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
         products
@@ -92,55 +91,10 @@ public class VendingMachine {
         products.close();
     }
 
-//    public void setIDtoChipProducts(String fileName) throws IOException {
-//        allProductsByID = new HashMap<>();
-//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-//        products
-//                .forEach(line -> {
-//                    String[] split = line.split("\\|");
-//                    allProductsByID.put(split[0], new Chip(split[1], Double.parseDouble(split[2])));
-//                });
-//        products.close();
-//    }
-
-//    public void setIDtoDrinkProducts(String fileName) throws IOException {
-//        allProductsByID = new HashMap<>();
-//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-//        products
-//                .forEach(line -> {
-//                    String[] split = line.split("\\|");
-//                    allProductsByID.put(split[0], new Drink(split[1], Double.parseDouble(split[2])));
-//                });
-//        products.close();
-//    }
-//
-//    public void setIDtoGumProducts(String fileName) throws IOException {
-//        allProductsByID = new HashMap<>();
-//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-//        products
-//                .forEach(line -> {
-//                    String[] split = line.split("\\|");
-//                    allProductsByID.put(split[0], new Gum(split[1], Double.parseDouble(split[2])));
-//                });
-//        products.close();
-//    }
-
-//    public void setIDtoGumProducts(String fileName, Class<? extends Product> foodItem) throws IOException {
-//        allProductsByID = new HashMap<>();
-//        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/" + fileName));
-//        products
-//                .forEach(line -> {
-//                    String[] split = line.split("\\|");
-//                    allProductsByID.put(split[0], new foodItem(split[1], Double.parseDouble(split[2])));
-//                });
-//        products.close();
-//    }
-
     // TODO: 11/28/20 This method is for testing. Change this to bring back entire hashMap-uh, not single value.
     public String getIDtoTest(String value) {
         return allProductsByID.get(value).toString();
     }
-
 
     public Double calculateCartTotal() {
         for(Double val : cart.values()) {
@@ -156,30 +110,13 @@ public class VendingMachine {
         return false;
     }
 
-    public ArrayList<String> setInitialOptions() {
-        ArrayList<String> initialOptions = new ArrayList<>();
-        initialOptions.add("(1) Display Vending Items");
-        initialOptions.add("(2) Purchase");
-        initialOptions.add("(3) Exit");
-        return initialOptions;
+    public ArrayList<String> setMenuOptions(String... options) {
+        ArrayList<String> menuOptions = new ArrayList<>();
+        for(String option : options) {
+            menuOptions.add(option);
+        }
+        return menuOptions;
     }
-
-    public ArrayList<String> setPurchaseOptions() {
-        ArrayList<String> purchaseOptions = new ArrayList<>();
-        purchaseOptions.add("(1) Feed Money");
-        purchaseOptions.add("(2) Add Additional Products");
-        purchaseOptions.add("(3) Exit");
-        return purchaseOptions;
-    }
-
-    public ArrayList<String> setAcceptFinalPaymentOptions() {
-        ArrayList<String> finalPurchaseOptions = new ArrayList<>();
-        finalPurchaseOptions.add("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00");
-        finalPurchaseOptions.add("Press  |   p   | To Process Transaction.");
-        finalPurchaseOptions.add("Press |   q   | To Add Additional Snacks");
-        return finalPurchaseOptions;
-    }
-
 
     public Double acceptFunds(Double fundsFromUser) throws Exception {
         if(fundsFromUser <= 0 || fundsFromUser.isNaN()) throw new IllegalArgumentException("Not A Valid Amount. Incoming Funds Must Be Greater Than 0.");
@@ -199,7 +136,7 @@ public class VendingMachine {
         System.out.println("Your Total Is $" + customerTotal);
 
         //Set Up Purchase Menu
-        Menu purchaseOptionsMenu = new Menu(setPurchaseOptions());
+        Menu purchaseOptionsMenu = new Menu(setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit"));
         for (String option : purchaseOptionsMenu.getOptions()) {
             System.out.println(option);
         }
@@ -210,7 +147,7 @@ public class VendingMachine {
                 case "1" : // (1) Feed Money
 
                     //Set Up Accept Funds Menu
-                    Menu acceptFundsMenu = new Menu(setAcceptFinalPaymentOptions());
+                    Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds. Press 1 for $1.00  |  5 for $5.00  |  10 for $10.00", "(2) Add Additional Products", "Press  |   p   | To Process Transaction.", "Press |   q   | To Add Additional Snacks"));
                     for(String option : acceptFundsMenu.getOptions()) {
                         System.out.println(option);
                     }
@@ -269,7 +206,7 @@ public class VendingMachine {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
-        menu = new Menu(setInitialOptions());
+        menu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
         setInventory();
         setProductPrices();
 
