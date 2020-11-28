@@ -75,7 +75,7 @@ public class VendingMachine {
         products.close();
     }
 
-    // TODO: 11/28/20 Get this working. Showing each element multiple times?
+    // TODO: 11/28/20 Get this working. Needs to be sorted... maybe stream it, sort then forEach.
     public void getAllProductsForDisplay(String fileName) throws IOException {
         allProductsByID.forEach((k,v) -> System.out.println(k + " " + v.toString()));
     }
@@ -166,10 +166,8 @@ public class VendingMachine {
     }
 
     public void displayVendingItems() throws IOException {
-        getAllProductsForDisplay("allCandy.txt");
-        getAllProductsForDisplay("allChips.txt");
-        getAllProductsForDisplay("allDrinks.txt");
-        getAllProductsForDisplay("allGum.txt");
+        getAllProductsForDisplay("allProducts.txt");
+
 
         // Instead of creating a new Menu object we are just SOUT each product as we create it.. This may need to be refactored.
         System.out.println("Type ID Number To Add Product To Your Cart!");
