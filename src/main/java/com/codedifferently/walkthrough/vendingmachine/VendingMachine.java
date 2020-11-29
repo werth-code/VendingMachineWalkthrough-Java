@@ -16,7 +16,6 @@ public class VendingMachine {
     private Scanner scanner;
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Product> allProductsByID;
-    private Map<String, Double> productPrices;
     private Map<String, Double> cart;
     private Double total = 0.00;
     private Double moneyProvided = 0.00;
@@ -42,20 +41,6 @@ public class VendingMachine {
         return inventoryRemaining;
     }
 
-    // TODO: 11/28/20 This method needs to be removed and taken out of start.. 
-    public void setProductPrices() throws IOException {
-        productPrices = new HashMap<>();
-        Stream <String> products = Files.lines(Paths.get("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/productCodeAndPrice.txt"));
-        products
-                .forEach(product -> {
-                    //split the txt so we have a hash with string, double
-                    String[] splitLine = product.split(","); // split on pipe "\\|"
-                    String productCode = splitLine[0];
-                    Double productPrice = Double.parseDouble(splitLine[1]);
-                    productPrices.put(productCode, productPrice);
-                });
-        products.close();
-    }
 
     public void setIDtoProducts(String fileName) throws IOException {
         allProductsByID = new HashMap<>();
@@ -136,7 +121,7 @@ public class VendingMachine {
 
     public void createCart(String usersProductChoice) {
         cart = new HashMap<>();
-        cart.put(usersProductChoice, productPrices.get(usersProductChoice));
+        cart.put(usersProductChoice, allProductsByID.get(usersProductChoice).getPrice());
     }
 
     public void removeFromInventory(String usersProductChoice) {
@@ -207,9 +192,10 @@ public class VendingMachine {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
+
         menu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
+
         setInventory();
-        setProductPrices();
         setIDtoProducts("allProducts.txt");
 
         while(flag) {
