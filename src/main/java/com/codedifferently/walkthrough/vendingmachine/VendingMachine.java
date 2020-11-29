@@ -6,10 +6,12 @@ import menu.Menu;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.function.DoubleUnaryOperator;
 import java.util.stream.Stream;
 
 public class VendingMachine {
@@ -63,7 +65,9 @@ public class VendingMachine {
 
     // TODO: 11/28/20 Get this working. Needs to be sorted... maybe stream it, sort then forEach.
     public void getAllProductsForDisplay(String fileName) throws IOException {
-        allProductsByID.forEach((k,v) -> System.out.println(k + " " + v.toString()));
+        ArrayList<String> productDisplay = new ArrayList<>();
+        allProductsByID.forEach((k,v) -> productDisplay.add(k + " " + v.toString()));
+        productDisplay.stream().sorted().forEach(System.out::println);
     }
 
     // TODO: 11/28/20 This method is for testing. Change this to bring back entire hashMap-uh, not single value.
@@ -119,6 +123,29 @@ public class VendingMachine {
         return false;
     }
 
+    public Double calculateChange() {
+        Double change = 0.0;
+        if(total < moneyProvided) change = moneyProvided - total;
+        return change;
+    }
+
+    public String returnChange() {
+        String changeString = "";
+        Double quarters = 0.0;
+        Double dimes = 0.0;
+        Double nickels = 0.0;
+
+        if(calculateChange() % .25 == 0) {
+            quarters = calculateChange() / 4;
+        }
+        changeString += "Quarters: " + quarters.toString() + "\n";
+        changeString += "Dimes: " + dimes.toString() + "\n";
+        changeString += "Nickels: " + nickels.toString() + "\n";
+
+        return changeString;
+    }
+    //The customer's money is returned using nickels, dimes, and quarters (using the smallest amount of coins possible).
+
     public void createCart(String usersProductChoice) {
         cart = new HashMap<>();
         cart.put(usersProductChoice, allProductsByID.get(usersProductChoice).getPrice());
@@ -127,43 +154,6 @@ public class VendingMachine {
     public void removeFromInventory(String usersProductChoice) {
         Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
         inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
-    }
-
-    // TODO: 11/28/20
-    public void startPurchase() throws Exception {
-
-        Double customerTotal = calculateCartTotal();
-
-        System.out.println("Your Total Is $" + customerTotal);
-        purchaseOptionsMenu();
-        String checkoutInput = scanner.next();
-        
-            switch (checkoutInput) {
-                case "1" : // (1) Feed Money
-
-                    acceptFundsMenu();
-                    String fundsInput = scanner.next();
-
-                    acceptFunds(Double.parseDouble(fundsInput));
-                    System.out.println(moneyProvided);
-
-                    if(fundsInput.equalsIgnoreCase("q")) displayVendingItems();
-                    if(fundsInput.equalsIgnoreCase("p") && enoughFundingProvided()) // finishTransaction();
-                    break;
-
-                    // TODO: 11/28/20 Set Up Products As Class Items - Finalize Transaction. 
-                    //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
-                    //All chip items print "Crunch Crunch, Yum!"
-                    //All candy items print "Munch Munch, Yum!"
-                    //All drink items print "Glug Glug, Yum!"
-                    //All gum items print "Chew Chew, Yum!"
-
-                case "2" : // (2) Add Additional Products
-                    displayVendingItems();
-                default:
-                    System.out.println("Try Again");
-
-        }
     }
 
     public void displayVendingItems() throws IOException {
@@ -179,15 +169,14 @@ public class VendingMachine {
             removeFromInventory(usersProductChoice);
 
             //Show user what they just added to cart
-            System.out.println(allProductsByID.get(usersProductChoice).toString());
-            System.out.println("Has Been Added To Your Cart!");
+            System.out.println("\n" + allProductsByID.get(usersProductChoice).toString());
+            System.out.println("Has Been Added To Your Cart!\n");
         }
         else {
             System.out.println("Sorry, That Product Is Sold Out Or Not Available!");
         }
     }
 
-    // TODO: 11/28/20 Need to implement finalize transaction and receipt. 
     public void start() throws Exception {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
@@ -223,6 +212,61 @@ public class VendingMachine {
             }
         }
         scanner.close();
+    }
+
+    // TODO: 11/28/20
+    public void startPurchase() throws Exception {
+
+        Double customerTotal = calculateCartTotal();
+
+        System.out.println("Your Total Is $" + customerTotal);
+        purchaseOptionsMenu();
+        String checkoutInput = scanner.next();
+
+        switch (checkoutInput) {
+            case "1" : // (1) Feed Money
+
+                acceptFundsMenu();
+                String fundsInput = scanner.next();
+
+                acceptFunds(Double.parseDouble(fundsInput));
+                System.out.println(moneyProvided);
+
+                if(fundsInput.equalsIgnoreCase("q")) {
+                    total = 0.0;
+                    displayVendingItems();
+                }
+                if(fundsInput.equalsIgnoreCase("p") && enoughFundingProvided()) {
+                    System.out.println("...Dispensing Your Snacks!...");
+
+                    // TODO: 11/29/20 function here..
+                    if(cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A')) System.out.println("Munch Munch, Yum!");
+                    if(cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C')) System.out.println("Crunch Crunch, Yum!");
+                    if(cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D')) System.out.println("Glug Glug, Yum!");
+                    if(cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G')) System.out.println("Chew Chew, Yum!");
+
+                    // // TODO: 11/29/20 function here..
+
+                    if(calculateChange() > 0) System.out.println(returnChange());
+
+                    //The machine's current balance should be updated to $0 remaining.
+                    total = 0.0;
+                }
+                    break;
+
+                // TODO: 11/28/20 Set Up Products As Class Items - Finalize Transaction.
+                //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
+
+                //All chip items print "Crunch Crunch, Yum!"
+                //All candy items print "Munch Munch, Yum!"
+                //All drink items print "Glug Glug, Yum!"
+                //All gum items print "Chew Chew, Yum!"
+
+            case "2" : // (2) Add Additional Products
+                displayVendingItems();
+            default:
+                System.out.println("Try Again");
+        }
     }
 
     public static void main(String[] args) throws Exception {
