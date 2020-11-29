@@ -26,7 +26,7 @@ public class VendingMachineTest {
         logger.info("Start");
 
         VendingMachine vend = new VendingMachine();
-        vend.start();
+        vend.startVending();
     }
 
     @Test

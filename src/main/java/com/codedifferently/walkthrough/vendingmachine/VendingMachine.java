@@ -6,12 +6,10 @@ import menu.Menu;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.sql.SQLOutput;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
-import java.util.function.DoubleUnaryOperator;
 import java.util.stream.Stream;
 
 public class VendingMachine {
@@ -27,6 +25,10 @@ public class VendingMachine {
     public VendingMachine() throws IOException {
         this.scanner = new Scanner(System.in);
         setInventory();
+    }
+
+    public Double getTotal() {
+        return total;
     }
 
     public void setInventory() throws IOException {
@@ -98,8 +100,15 @@ public class VendingMachine {
         return menuOptions;
     }
 
+    public void startingMenu() {
+        Menu startingMenu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
+        for (String option : startingMenu.getOptions()) {
+            System.out.println(option);
+        }
+    }
+
     public void purchaseOptionsMenu() {
-        Menu purchaseOptionsMenu = new Menu(setMenuOptions("(1) Feed Money", "(2) Add Additional Products", "(3) Exit"));
+        Menu purchaseOptionsMenu = new Menu(setMenuOptions("(1) Feed Money", "(2) Go Back To Add More Snacks"));
         for (String option : purchaseOptionsMenu.getOptions()) {
             System.out.println(option);
         }
@@ -185,46 +194,51 @@ public class VendingMachine {
             //Show user what they just added to cart
             System.out.println("\n" + allProductsByID.get(usersProductChoice).toString());
             System.out.println("Has Been Added To Your Cart!\n");
+
+            Double customerTotal = calculateCartTotal();
+            System.out.println("Your Total Is $" + customerTotal);
         }
         else {
             System.out.println("Sorry, That Product Is Sold Out Or Not Available!");
         }
     }
 
-    public void start() throws Exception {
+    public void startVending() throws Exception {
         System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
-
-        menu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
 
         setInventory();
         setIDtoProducts("allProducts.txt");
 
         while(flag) {
 
-            for (String option : menu.getOptions()) {
-                System.out.println(option);
-            }
-
+            startingMenu();
             String input = scanner.next();
 
             switch(input) { // We press 1 and want to see all products
 
                 case "1" : // (1) Display Vending Items
-                    total = 0.0;
+                    //total = 0.0;
                     displayVendingItems();
                     break;
+
                 case "2" : // (2) Purchase
-                    flag = false;
+                    if(total == 0) {
+                        System.out.println("Please Add A Product First!");
+                        continue;
+                    }
                     startPurchase();
-                    break;
+                    continue;
                 case "3" : // (3) Exit
-                    flag = false;
                     System.out.println("Bye Bye Friend.");
+                    flag = false;
                     break;
+
                 default:
-                    System.out.println("Try Again");
+                    //startPurchase();
+                    flag = false;
+                    break;
             }
         }
         scanner.close();
@@ -232,14 +246,16 @@ public class VendingMachine {
 
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
-        Boolean flag = true;
         Double customerTotal = calculateCartTotal();
-
         System.out.println("Your Total Is $" + customerTotal);
+
+        Boolean flag = true;
+
         purchaseOptionsMenu();
         String checkoutInput = scanner.next();
 
         while(flag) {
+
             switch (checkoutInput) {
                 case "1": // (1) Feed Money
 
@@ -263,28 +279,26 @@ public class VendingMachine {
                         if (cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G'))
                             System.out.println("Chew Chew, Yum!");
 
-                        // // TODO: 11/29/20 not showing change given...
                         Double change = calculateChange();
-                        System.out.println(change); //seems to be accurate..
-                        System.out.println(returnChange(change)); // not showing
+                        System.out.println(change);
+                        System.out.println(returnChange(change));
 
                         total = 0.0;
                         moneyProvided = 0.0;
-                        start();
-                    } else { //// TODO: 11/29/20 This is kicking us out to product selection. We need to go back to the first if statement.
-                        System.out.println("Please Add Additional Funds.");
+                        startVending();
+                        break;
+                    }
+                    else {
+                        //System.out.println("Please Add Additional Funds.");
                         continue;
                     }
 
-                // TODO: 11/28/20 Set Up Products As Class Items - Finalize Transaction.
-                //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
-
-                case "q": // (2) Add Additional Products
-                    total = 0.0;
-                    displayVendingItems();
+                case "2":
+                    flag = false;
+                    continue;
 
                 default:
-                    System.out.println("Try Again");
+                    flag = false;
                     break;
             }
         }
@@ -292,6 +306,6 @@ public class VendingMachine {
 
     public static void main(String[] args) throws Exception {
         VendingMachine vendingMachine = new VendingMachine();
-        vendingMachine.start();
+        vendingMachine.startVending();
     }
 }
