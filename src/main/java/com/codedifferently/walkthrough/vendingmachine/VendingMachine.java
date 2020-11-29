@@ -17,8 +17,9 @@ public class VendingMachine {
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Product> allProductsByID;
     private Map<String, Double> cart;
-    private Double total = 0.00; //// TODO: 11/29/20 troubleshooting - should be private
-    private Double moneyProvided = 0.00; //// TODO: 11/29/20
+    private Double total = 0.00;
+    private Double customerTotal;
+    private Double moneyProvided = 0.00;
     private Menu menu;
 
 
@@ -195,7 +196,7 @@ public class VendingMachine {
             System.out.println("\n" + allProductsByID.get(usersProductChoice).toString());
             System.out.println("Has Been Added To Your Cart!\n");
 
-            Double customerTotal = calculateCartTotal();
+            customerTotal = calculateCartTotal();
             System.out.println("Your Total Is $" + customerTotal);
         }
         else {
@@ -246,15 +247,14 @@ public class VendingMachine {
 
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
-        Double customerTotal = calculateCartTotal();
         System.out.println("Your Total Is $" + customerTotal);
 
-        Boolean flag = true;
+        Boolean innerFlag = true;
 
         purchaseOptionsMenu();
         String checkoutInput = scanner.next();
 
-        while(flag) {
+        while(innerFlag) {
 
             switch (checkoutInput) {
                 case "1": // (1) Feed Money
@@ -285,20 +285,17 @@ public class VendingMachine {
 
                         total = 0.0;
                         moneyProvided = 0.0;
-                        startVending();
+                        innerFlag = false;
                         break;
                     }
-                    else {
-                        //System.out.println("Please Add Additional Funds.");
-                        continue;
-                    }
+                    else continue;
 
                 case "2":
-                    flag = false;
+                    innerFlag = false;
                     continue;
 
                 default:
-                    flag = false;
+                    innerFlag = false;
                     break;
             }
         }
