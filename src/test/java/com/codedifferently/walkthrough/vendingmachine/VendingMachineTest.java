@@ -163,6 +163,20 @@ public class VendingMachineTest {
         Assert.assertTrue(vendingMachine.enoughFundingProvided());
     }
 
+    @Test
+    public void testCalculateChange() { //How Do I Test With Private Variables without getters and setters for EVERYTHING?
+        //Given
+        //vendingMachine.total = 2.65;
+        //vendingMachine.moneyProvided = 5.00;
+        //When
+        Double expected = 2.35;
+        Double actual = vendingMachine.calculateChange();
+        System.out.println(vendingMachine.calculateChange());
+        //Then
+        Assert.assertEquals(expected, actual);
+
+    }
+
     public void testDisplayVendingItems() {
     }
 

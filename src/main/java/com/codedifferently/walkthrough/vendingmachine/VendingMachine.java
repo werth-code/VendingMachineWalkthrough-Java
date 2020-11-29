@@ -19,8 +19,8 @@ public class VendingMachine {
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Product> allProductsByID;
     private Map<String, Double> cart;
-    private Double total = 0.00;
-    private Double moneyProvided = 0.00;
+    private Double total = 0.00; //// TODO: 11/29/20 troubleshooting - should be private
+    private Double moneyProvided = 0.00; //// TODO: 11/29/20
     private Menu menu;
 
 
@@ -125,26 +125,40 @@ public class VendingMachine {
 
     public Double calculateChange() {
         Double change = 0.0;
-        if(total < moneyProvided) change = moneyProvided - total;
+        if(moneyProvided > total) change = moneyProvided - total;
         return change;
     }
 
-    public String returnChange() {
+    // TODO: 11/29/20 Improve this algorithm with some type of halving.. like amount / 4, %  4 etc..
+    public String returnChange(Double change) {
+        Double amount = change;
         String changeString = "";
-        Double quarters = 0.0;
-        Double dimes = 0.0;
-        Double nickels = 0.0;
 
-        if(calculateChange() % .25 == 0) {
-            quarters = calculateChange() / 4;
+        Double quarters = 0.0, dimes = 0.0, nickels = 0.0;
+
+        while(amount > 0.0) {
+            if(amount - 1.00 > 0) {
+                amount -= 1.00;
+                quarters += 4;
+            }
+            else if(amount - 0.25 >= 0) {
+                amount -= 0.25;
+                quarters += 1;
+            }
+            else if(amount - .10 >= 0) {
+                amount -= .10;
+                dimes += 1;
+            }
+            else if (amount - .05 >= 0) {
+                amount -= .05;
+                nickels += 1;
+            }
+            else break;
         }
-        changeString += "Quarters: " + quarters.toString() + "\n";
-        changeString += "Dimes: " + dimes.toString() + "\n";
-        changeString += "Nickels: " + nickels.toString() + "\n";
 
+        changeString += "Quarters: " + quarters.toString() + "\n" + "Dimes: " + dimes.toString() + "\n" + "Nickels: " + nickels.toString() + "\n";
         return changeString;
     }
-    //The customer's money is returned using nickels, dimes, and quarters (using the smallest amount of coins possible).
 
     public void createCart(String usersProductChoice) {
         cart = new HashMap<>();
@@ -198,9 +212,11 @@ public class VendingMachine {
             switch(input) { // We press 1 and want to see all products
 
                 case "1" : // (1) Display Vending Items
+                    total = 0.0;
                     displayVendingItems();
                     break;
                 case "2" : // (2) Purchase
+                    flag = false;
                     startPurchase();
                     break;
                 case "3" : // (3) Exit
@@ -216,56 +232,61 @@ public class VendingMachine {
 
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
-
+        Boolean flag = true;
         Double customerTotal = calculateCartTotal();
 
         System.out.println("Your Total Is $" + customerTotal);
         purchaseOptionsMenu();
         String checkoutInput = scanner.next();
 
-        switch (checkoutInput) {
-            case "1" : // (1) Feed Money
+        while(flag) {
+            switch (checkoutInput) {
+                case "1": // (1) Feed Money
 
-                acceptFundsMenu();
-                String fundsInput = scanner.next();
+                    acceptFundsMenu();
+                    String fundsInput = scanner.next();
 
-                acceptFunds(Double.parseDouble(fundsInput));
-                System.out.println(moneyProvided);
+                    acceptFunds(Double.parseDouble(fundsInput));
+                    System.out.println("You Have Added $" + moneyProvided);
 
-                if(fundsInput.equalsIgnoreCase("q")) {
-                    total = 0.0;
-                    displayVendingItems();
-                }
-                if(fundsInput.equalsIgnoreCase("p") && enoughFundingProvided()) {
-                    System.out.println("...Dispensing Your Snacks!...");
+                    if (enoughFundingProvided()) {
+                        System.out.println("...Dispensing Your Snacks!...");
 
-                    // TODO: 11/29/20 function here..
-                    if(cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A')) System.out.println("Munch Munch, Yum!");
-                    if(cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C')) System.out.println("Crunch Crunch, Yum!");
-                    if(cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D')) System.out.println("Glug Glug, Yum!");
-                    if(cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G')) System.out.println("Chew Chew, Yum!");
+                        // TODO: 11/29/20 function here..
+                        // Should know exactly which items are being dispensed and return Object.message(), not sout.
+                        if (cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A'))
+                            System.out.println("Munch Munch, Yum!");
+                        if (cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C'))
+                            System.out.println("Crunch Crunch, Yum!");
+                        if (cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D'))
+                            System.out.println("Glug Glug, Yum!");
+                        if (cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G'))
+                            System.out.println("Chew Chew, Yum!");
 
-                    // // TODO: 11/29/20 function here..
+                        // // TODO: 11/29/20 not showing change given...
+                        Double change = calculateChange();
+                        System.out.println(change); //seems to be accurate..
+                        System.out.println(returnChange(change)); // not showing
 
-                    if(calculateChange() > 0) System.out.println(returnChange());
-
-                    //The machine's current balance should be updated to $0 remaining.
-                    total = 0.0;
-                }
-                    break;
+                        total = 0.0;
+                        moneyProvided = 0.0;
+                        start();
+                    } else { //// TODO: 11/29/20 This is kicking us out to product selection. We need to go back to the first if statement.
+                        System.out.println("Please Add Additional Funds.");
+                        continue;
+                    }
 
                 // TODO: 11/28/20 Set Up Products As Class Items - Finalize Transaction.
                 //Dispensing an item prints the item name, cost, and the money remaining. Dispensing also returns a message:
 
-                //All chip items print "Crunch Crunch, Yum!"
-                //All candy items print "Munch Munch, Yum!"
-                //All drink items print "Glug Glug, Yum!"
-                //All gum items print "Chew Chew, Yum!"
+                case "q": // (2) Add Additional Products
+                    total = 0.0;
+                    displayVendingItems();
 
-            case "2" : // (2) Add Additional Products
-                displayVendingItems();
-            default:
-                System.out.println("Try Again");
+                default:
+                    System.out.println("Try Again");
+                    break;
+            }
         }
     }
 
