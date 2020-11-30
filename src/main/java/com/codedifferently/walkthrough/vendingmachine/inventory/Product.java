@@ -18,6 +18,14 @@ public abstract class Product {
     public Product(double parseDouble) {
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
     public String getName(){
         return name;
     }

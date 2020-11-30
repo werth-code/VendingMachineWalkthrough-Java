@@ -3,9 +3,20 @@ package com.codedifferently.walkthrough.vendingmachine.inventory;
 import java.util.ArrayList;
 
 public class Candy extends Product {
+    private Integer quantity;
+
     public Candy (String nameIn, Double priceIn){
         super(nameIn, priceIn);
         msg = "Munch Munch, Yum!";
+        quantity = 5;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
 

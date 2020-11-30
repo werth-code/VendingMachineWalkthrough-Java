@@ -3,24 +3,21 @@ package com.codedifferently.walkthrough.vendingmachine;
 import com.codedifferently.walkthrough.vendingmachine.inventory.*;
 import menu.Menu;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Scanner;
+import java.util.*;
 import java.util.stream.Stream;
 
 public class VendingMachine {
     private Scanner scanner;
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Product> allProductsByID;
-    private Map<String, Double> cart;
+    private ArrayList<Product> cart;
     private Double total = 0.00;
     private Double customerTotal;
     private Double moneyProvided = 0.00;
-    private Menu menu;
 
 
     public VendingMachine() throws IOException {
@@ -66,7 +63,6 @@ public class VendingMachine {
         products.close();
     }
 
-    // TODO: 11/28/20 Get this working. Needs to be sorted... maybe stream it, sort then forEach.
     public void getAllProductsForDisplay(String fileName) throws IOException {
         ArrayList<String> productDisplay = new ArrayList<>();
         allProductsByID.forEach((k,v) -> productDisplay.add(k + " " + v.toString()));
@@ -78,10 +74,9 @@ public class VendingMachine {
         return allProductsByID.get(value).toString();
     }
 
-    //Todo This method will keep adding total everytime you leave and return to checkout. Not Working correctly!
     public Double calculateCartTotal() {
-        for(Double val : cart.values()) {
-            total += val;
+        for(Product item : cart) {
+            total += item.getPrice();
         }
         return total;
     }
@@ -139,7 +134,16 @@ public class VendingMachine {
         return change;
     }
 
-    // TODO: 11/29/20 Improve this algorithm with some type of halving.. like amount / 4, %  4 etc..
+    //// TODO: 11/30/20 Get This Working! Not writing to file.
+    public void transactionLogFile(String typeOfTransaction, Double amountBefore, Double amountAfter) throws IOException {
+        FileWriter fileWriter = new FileWriter("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/log.txt");
+        Date date = new Date();
+        String lineToWrite = ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter;
+        fileWriter.write(lineToWrite);
+
+        System.out.println(lineToWrite);
+    }
+
     public String returnChange(Double change) {
         Double amount = change;
         String changeString = "";
@@ -170,9 +174,15 @@ public class VendingMachine {
         return changeString;
     }
 
-    public void createCart(String usersProductChoice) {
-        cart = new HashMap<>();
-        cart.put(usersProductChoice, allProductsByID.get(usersProductChoice).getPrice());
+    //TODO We need to increment the count of items - if they add multiples of the same item!
+    public void createCart() {
+        cart = new ArrayList<>();
+    }
+
+    public void addToCart(String usersProductChoice) {
+        cart.add(allProductsByID.get(usersProductChoice));
+        Integer remainingStock = allProductsByID.get(usersProductChoice).getQuantity();
+        allProductsByID.get(usersProductChoice).setQuantity(remainingStock - 1);
     }
 
     public void removeFromInventory(String usersProductChoice) {
@@ -180,8 +190,14 @@ public class VendingMachine {
         inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
     }
 
+    public void dispenseVendingItems() {
+
+    }
+
     public void displayVendingItems() throws IOException {
         getAllProductsForDisplay("allProducts.txt");
+        // TODO: 11/30/20
+        createCart();
 
         System.out.println("Type ID Number To Add Product To Your Cart!");
         String usersProductChoice = scanner.next();
@@ -189,7 +205,8 @@ public class VendingMachine {
         Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart.
 
         if(productAvailable) {
-            createCart(usersProductChoice);
+            addToCart(usersProductChoice);
+            // TODO: 11/30/20 ADD TO CART!
             removeFromInventory(usersProductChoice);
 
             //Show user what they just added to cart
@@ -265,23 +282,27 @@ public class VendingMachine {
                     acceptFunds(Double.parseDouble(fundsInput));
                     System.out.println("You Have Added $" + moneyProvided);
 
+                    transactionLogFile("Payment", 0.0, moneyProvided);
+
                     if (enoughFundingProvided()) {
                         System.out.println("...Dispensing Your Snacks!...");
 
-                        // TODO: 11/29/20 function here..
+                        //// TODO: 11/30/20 Get actual products from our hashMap and return their message.
                         // Should know exactly which items are being dispensed and return Object.message(), not sout.
-                        if (cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A'))
-                            System.out.println("Munch Munch, Yum!");
-                        if (cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C'))
-                            System.out.println("Crunch Crunch, Yum!");
-                        if (cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D'))
-                            System.out.println("Glug Glug, Yum!");
-                        if (cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G'))
-                            System.out.println("Chew Chew, Yum!");
+//                        if (cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A'))
+//                            System.out.println("Munch Munch, Yum!");
+//                        if (cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C'))
+//                            System.out.println("Crunch Crunch, Yum!");
+//                        if (cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D'))
+//                            System.out.println("Glug Glug, Yum!");
+//                        if (cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G'))
+//                            System.out.println("Chew Chew, Yum!");
 
                         Double change = calculateChange();
                         System.out.println(change);
                         System.out.println(returnChange(change));
+
+                        transactionLogFile("Payment", 0.0, moneyProvided);
 
                         total = 0.0;
                         moneyProvided = 0.0;
