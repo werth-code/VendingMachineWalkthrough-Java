@@ -1,0 +1,4 @@
+>Mon Nov 30 11:27:45 EST 2020 Payment: $4.75 $5.0
+>Mon Nov 30 11:27:45 EST 2020 Trident Mint: $2.5 $2.5
+>Mon Nov 30 11:27:45 EST 2020 Reese’s PB Cups: $2.25 $0.25
+>Mon Nov 30 11:27:45 EST 2020 Refund: $0.25 $5.0

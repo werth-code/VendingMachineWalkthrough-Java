@@ -3,6 +3,7 @@ package com.codedifferently.walkthrough.vendingmachine;
 import com.codedifferently.walkthrough.vendingmachine.inventory.*;
 import menu.Menu;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -18,6 +19,7 @@ public class VendingMachine {
     private Double total = 0.00;
     private Double customerTotal;
     private Double moneyProvided = 0.00;
+    private String receiptLineToWrite = "";
 
 
     public VendingMachine() throws IOException {
@@ -123,14 +125,23 @@ public class VendingMachine {
         return change;
     }
 
-    //// TODO: 11/30/20 Get This Working! Not writing to file.
     public void transactionLogFile(String typeOfTransaction, Double amountBefore, Double amountAfter) throws IOException {
-        FileWriter fileWriter = new FileWriter("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/log.txt");
+        File file = new File("log.txt");
+        FileWriter writer = new FileWriter(file);
         Date date = new Date();
-        String lineToWrite = ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter + "\n";
-        fileWriter.write(lineToWrite);
+        receiptLineToWrite += ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter + "\n";
 
-        System.out.println(lineToWrite);
+        writer.write(receiptLineToWrite);
+        writer.flush();
+        writer.close();
+    }
+
+    public void logFileForEachItemInCart() throws IOException {
+        Double tally = 0.0;
+        for (Product prod : cart) {
+            tally += prod.getPrice();
+            transactionLogFile(prod.getName(), prod.getPrice(), (moneyProvided - tally));
+        }
     }
 
     public String returnChange(Double change) {
@@ -293,6 +304,8 @@ public class VendingMachine {
                         Double change = calculateChange();
                         System.out.println("\nYour Change Is $" + change);
                         System.out.println(returnChange(change));
+
+                        logFileForEachItemInCart();
 
                         transactionLogFile("Refund", change, moneyProvided);
 
