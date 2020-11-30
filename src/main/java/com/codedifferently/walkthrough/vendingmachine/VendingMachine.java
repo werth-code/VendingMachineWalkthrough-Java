@@ -14,7 +14,7 @@ public class VendingMachine {
     private Scanner scanner;
     private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
     private Map<String, Product> allProductsByID;
-    private ArrayList<Product> cart;
+    private ArrayList<Product> cart = new ArrayList<>();
     private Double total = 0.00;
     private Double customerTotal;
     private Double moneyProvided = 0.00;
@@ -23,10 +23,6 @@ public class VendingMachine {
     public VendingMachine() throws IOException {
         this.scanner = new Scanner(System.in);
         setInventory();
-    }
-
-    public Double getTotal() {
-        return total;
     }
 
     public void setInventory() throws IOException {
@@ -53,9 +49,9 @@ public class VendingMachine {
                     allProductsByID.put(split[0], new Product(split[1], Double.parseDouble(split[2])) {
                         @Override
                         public String message() {
-                            if(split[1].charAt(0) == 'A') return "Munch Munch, Yum!";
-                            else if(split[1].charAt(0) == 'C') return "Crunch Crunch, Yum!";
-                            else if (split[2].charAt(0) == 'D') return "Glug Glug, Yum!";
+                            if(split[0].charAt(0) == 'A') return "Munch Munch, Yum!";
+                            else if(split[0].charAt(0) == 'C') return "Crunch Crunch, Yum!";
+                            else if (split[0].charAt(0) == 'D') return "Glug Glug, Yum!";
                             else return "Chew Chew, Yum!";
                         }
                     });
@@ -69,7 +65,6 @@ public class VendingMachine {
         productDisplay.stream().sorted().forEach(System.out::println);
     }
 
-    // TODO: 11/28/20 This method is for testing. Change this to bring back entire hashMap-uh, not single value.
     public String getIDtoTest(String value) {
         return allProductsByID.get(value).toString();
     }
@@ -89,6 +84,7 @@ public class VendingMachine {
         return menuOptions;
     }
 
+    // TODO: 11/30/20 These Should All Be One Method...
     public void startingMenu() {
         Menu startingMenu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
         for (String option : startingMenu.getOptions()) {
@@ -131,7 +127,7 @@ public class VendingMachine {
     public void transactionLogFile(String typeOfTransaction, Double amountBefore, Double amountAfter) throws IOException {
         FileWriter fileWriter = new FileWriter("/Users/m21/dev/labs/VendingMachineWalkthrough-Java/log.txt");
         Date date = new Date();
-        String lineToWrite = ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter;
+        String lineToWrite = ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter + "\n";
         fileWriter.write(lineToWrite);
 
         System.out.println(lineToWrite);
@@ -167,13 +163,8 @@ public class VendingMachine {
         return changeString;
     }
 
-    //TODO We need to increment the count of items - if they add multiples of the same item!
-    public void createCart() {
-        cart = new ArrayList<>();
-    }
-
-    public Boolean checkForProduct(String productID) {
-        if(allProductsByID.containsKey(productID) && allProductsByID.get(productID).getQuantity() > 0) { //if that choice exists and we have the inventory..
+    public Boolean checkForProduct(String productID) { //inventoryRemaining
+        if(inventoryRemaining.containsKey(productID) && inventoryRemaining.get(productID) > 0) { //if that choice exists and we have the inventory..
             return true;
         }
         return false;
@@ -184,36 +175,32 @@ public class VendingMachine {
     }
 
     public void removeFromInventory(String usersProductChoice) {
-        Integer remainingStock = allProductsByID.get(usersProductChoice).getQuantity();
-        allProductsByID.get(usersProductChoice).setQuantity(remainingStock - 1);
+        Integer remainingStock = inventoryRemaining.get(usersProductChoice);
+        inventoryRemaining.put(usersProductChoice, remainingStock - 1);
+    }
+    public void displayMessageAtCheckOut() {
+        cart.forEach(ele-> System.out.println(ele.message()));
     }
 
-
-    public void dispenseVendingItems() {
-
-    }
-
-    public void displayVendingItems() throws IOException {
+    public void displayVendingItems() throws Exception {
         getAllProductsForDisplay("allProducts.txt");
-        // TODO: 11/30/20
-        createCart();
 
         System.out.println("Type ID Number To Add Product To Your Cart!");
-        String usersProductChoice = scanner.next();
+        System.out.println("Or Press |  q  | To Go Back");
 
-        Boolean productAvailable = checkForProduct(usersProductChoice); //see if the product is available and if so add to cart.
+        String usersProductChoice = scanner.next();
+        if (usersProductChoice.equalsIgnoreCase("q") || usersProductChoice.equals(3)) {
+            startVending();
+        }
+
+        Boolean productAvailable = checkForProduct(usersProductChoice);
 
         if(productAvailable) {
             addToCart(usersProductChoice);
-            // TODO: 11/30/20 ADD TO CART!
             removeFromInventory(usersProductChoice);
 
-            //Show user what they just added to cart
             System.out.println("\n" + allProductsByID.get(usersProductChoice).toString());
             System.out.println("Has Been Added To Your Cart!\n");
-
-            customerTotal = calculateCartTotal();
-            System.out.println("Your Total Is $" + customerTotal);
         }
         else {
             System.out.println("Sorry, That Product Is Sold Out Or Not Available!");
@@ -231,6 +218,11 @@ public class VendingMachine {
 
             startingMenu();
             String input = scanner.next();
+            if (input.equalsIgnoreCase("q") || input.equals(3)) {
+                System.out.println("Bye Bye Friend.");
+                flag = false;
+                break;
+            }
 
             switch(input) {
 
@@ -239,18 +231,15 @@ public class VendingMachine {
                     break;
 
                 case "2" : // (2) Purchase
-                    if(total == 0) {
+                    if(cart.isEmpty()) {
                         System.out.println("Please Add A Product First!");
                         continue;
                     }
                     startPurchase();
                     continue;
                 case "3" : // (3) Exit
-                    System.out.println("Bye Bye Friend.");
-                    flag = false;
-                    break;
-
                 default:
+                    System.out.println("Bye Bye Friend.");
                     flag = false;
                     break;
             }
@@ -260,7 +249,6 @@ public class VendingMachine {
 
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
-        System.out.println("Your Total Is $" + customerTotal);
         System.out.println("Cart: " + cart.toString());
 
         Boolean innerFlag = true;
@@ -268,18 +256,26 @@ public class VendingMachine {
         purchaseOptionsMenu();
         String checkoutInput = scanner.next();
 
+        customerTotal = calculateCartTotal();
+
         while(innerFlag) {
 
             switch (checkoutInput) {
                 case "1": // (1) Feed Money
 
-                    System.out.println("Cart: " + cart.toString());
+                    System.out.println("Your Total Is $" + customerTotal);
+                    System.out.println("Cart: " + cart.toString() + "\n");
                     acceptFundsMenu();
 
-                    // TODO: 11/30/20 WHY is this not working!!!!
                     String fundsInput = scanner.next();
 
                     if(fundsInput.equalsIgnoreCase("q")) {
+                        if(moneyProvided > 0.0) {
+                            Double prevMoneyProvided = moneyProvided;
+                            moneyProvided = 0.0;
+                            transactionLogFile("Refund", prevMoneyProvided, moneyProvided);
+                        }
+                        total = 0.0;
                         innerFlag = false;
                         break;
                     }
@@ -287,23 +283,22 @@ public class VendingMachine {
 
                     System.out.println("You Have Added $" + moneyProvided);
 
-                    transactionLogFile("Payment", 0.0, moneyProvided);
+                    transactionLogFile("Payment", total, moneyProvided);
 
                     if (enoughFundingProvided()) {
                         System.out.println("...Dispensing Your Snacks!...");
 
-                        for(int i = 0; i < cart.size(); i++) {
-                            System.out.println(cart.get(i).message());
-                        }
+                        displayMessageAtCheckOut(); // TODO: 11/30/20 Only Displaying Chew Chew, Yum!
 
                         Double change = calculateChange();
-                        System.out.println(change);
+                        System.out.println("\nYour Change Is $" + change);
                         System.out.println(returnChange(change));
 
-                        transactionLogFile("Payment", 0.0, moneyProvided);
+                        transactionLogFile("Refund", change, moneyProvided);
 
                         total = 0.0;
                         moneyProvided = 0.0;
+                        cart.clear();
                         innerFlag = false;
                         break;
                     }
