@@ -2,20 +2,9 @@ package com.codedifferently.walkthrough.vendingmachine.inventory;
 
 
 public class Gum extends Product{
-    private Integer quantity;
-
     public Gum(String nameIn, Double priceIn){
         super(nameIn, priceIn);
         msg = "Chew Chew, Yum!";
-        quantity = 5;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     public Gum(){

@@ -1,21 +1,19 @@
 package com.codedifferently.walkthrough.vendingmachine;
 
 import com.codedifferently.walkthrough.vendingmachine.inventory.Product;
+import org.apache.log4j.AsyncAppender;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 public class VendingMachineTest {
 
     private final static Logger logger = Logger.getLogger(VendingMachineTest.class);
     public VendingMachine vendingMachine;
-    private Map<String, Integer> inventoryRemaining;
-    private Map<String, Product> allProductsByID;
 
     @Before
     public void setUp() throws IOException {
@@ -29,28 +27,21 @@ public class VendingMachineTest {
         vend.startVending();
     }
 
-    @Test
-    public void getAllProductsForDisplayTest() throws IOException { // TODO: 11/28/20 Changed Method, Need To Reformat 
-        //GIVEN
-        String textFile = "allCandy.txt";
-        //WHEN
-        String expected =
-        "A1|Peanut M&M’s|2.50" +
-        "A2|Reese’s PB Cups|2.25" +
-        "A3|Hershey Bar Classic|2.00" +
-        "A4|Peanut Chews|2.25" +
-        "A5|Skittles Original|2.25" +
-        "A6|Sour Patch Kids|2.25" +
-        "A7|EnjoyLife RiceMilk Chocolate Bar|3.00 " + //Weird test fluke where a space is off by 1?
-        "A8|free2b Sun Cups|3.00" ;
 
-        //String actual = vendingMachine.getAllProductsForDisplay(textFile);
+    @Test
+    public void testSetIDToProducts() throws IOException {
+        //GIVEN
+        String textFile = "allProducts.txt";
+        vendingMachine.setIDtoProducts(textFile);
+        //WHEN
+        String actual = vendingMachine.getAllProductsByID().get("A4").toString();
+        String expected = "Peanut Chews $2.25";
         //THEN
-        //Assert.assertEquals(expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Test
-    public void testSetInventory() throws IOException { // NOT WORKING YET...inventoryRemaining issue
+    public void testSetInventory() throws IOException {
         //GIVEN
         vendingMachine.setInventory();
         //WHEN
@@ -73,32 +64,6 @@ public class VendingMachineTest {
         Boolean actual = vendingMachine.checkForProduct(usersProductChoice);
         Assert.assertEquals(true, actual);
     }
-
-//    @Test
-//    public void checkForProductFalse() throws IOException {
-//        vendingMachine.setInventory();
-//        inventoryRemaining.put("A2", 0);
-//        String usersProductChoice = "A2";
-//        Boolean actual = vendingMachine.checkForProduct(usersProductChoice);
-//        Assert.assertEquals(false, actual);
-//    }
-
-    @Test
-    public void setIDtoProductsTest() throws IOException {
-        //GIVEN Before
-        allProductsByID = new HashMap<>();
-        vendingMachine.setIDtoProducts("allProducts.txt");
-        //WHEN
-        String actual = vendingMachine.getIDtoTest("A4");
-        String expected = "Peanut Chews 2.25";
-        //THEN
-        Assert.assertEquals(expected, actual);
-    }
-
-//    @Test
-//    public void testCalculateCartTotal() {
-//
-//    }
 
     @Test
     public void testSetInitialOptions() {
@@ -143,7 +108,6 @@ public class VendingMachineTest {
         Assert.assertEquals(expected, actual);
     }
 
-    // TODO: 11/28/20 EXPECTED FAIL.
 
     @Test
     public void testAcceptFundsFAIL() throws Exception {
@@ -164,25 +128,234 @@ public class VendingMachineTest {
     }
 
     @Test
-    public void testCalculateChange() { //How Do I Test With Private Variables without getters and setters for EVERYTHING?
-        //Given
-        //vendingMachine.total = 2.65;
-        //vendingMachine.moneyProvided = 5.00;
-        //When
-        Double expected = 2.35;
-        Double actual = vendingMachine.calculateChange();
-        System.out.println(vendingMachine.calculateChange());
+    public void testReturnChange() { //// TODO: 11/30/20 Strange rounding error in function. Slight hack to make work.
+        //GIVEN
+        String expected = "Quarters: 10.0\nDimes: 1.0\nNickels: 1.0\n";
+        String actual = vendingMachine.returnChange(2.65);
+        System.out.println(vendingMachine.returnChange(2.65));
         //Then
         Assert.assertEquals(expected, actual);
 
     }
 
-    public void testDisplayVendingItems() {
+    @Test
+    public void testRemoveFromInventory() {
+        //GIVEN
+        vendingMachine.getInventory();
+        vendingMachine.removeFromInventory("A1");
+        //WHEN
+        Integer actual = vendingMachine.getInventory().get("A1");
+        Integer expected = 4;
+        //THEN
+        Assert.assertEquals(expected, actual);
     }
 
-    public void testStart() {
+
+    @Test
+    public void testGetAllProductsByID() throws IOException {
+        //GIVEN
+        vendingMachine.setIDtoProducts("allProducts.txt");
+        //WHEN
+        String expected = "Sprite $2.5";
+        String actual = vendingMachine.getAllProductsByID().get("D4").toString();;
+        //THEN
+        Assert.assertEquals(expected, actual);
     }
 
-    public void testMain() {
+    @Test
+    public void testGetAllProductsForDisplay() throws IOException {
+        //GIVEN
+        vendingMachine.setIDtoProducts("allProducts.txt");
+        vendingMachine.getAllProductsForDisplay("allProducts");
+        //WHEN
+        //THEN
+        //Console Should Show All Products With ID#
+    }
+
+    @Test
+    public void testCalculateCartTotal() throws IOException {
+        //GIVEN
+        vendingMachine.setIDtoProducts("allProducts.txt");
+        vendingMachine.addToCart("D2");
+        System.out.println(vendingMachine.getAllProductsByID().get("D2"));
+        //WHEN
+        Double expected = 3.5;
+        Double actual = vendingMachine.calculateCartTotal();
+        //THEN
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testSetMenuOptions() {
+        //GIVEN
+        String actual = vendingMachine.setMenuOptions("Option 1", "Option 2").toString();
+        System.out.println(actual);
+        //WHEN
+        String expected = "[Option 1, Option 2]";
+        //THEN
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testStartingMenu() {
+        //GIVEN
+        vendingMachine.startingMenu();
+        //Should Display
+
+        //(1) Display Vending Items
+        //(2) Purchase
+        //(3) Exit
+
+    }
+
+    @Test
+    public void testPurchaseOptionsMenu() {
+        //GIVEN
+        vendingMachine.purchaseOptionsMenu();
+        //Should Display
+
+        //(1) Feed Money
+        //(2) Go Back To Add More Snacks
+
+    }
+
+    @Test
+    public void testAcceptFundsMenu() {
+        //GIVEN
+        vendingMachine.acceptFundsMenu();
+        //Should Display
+
+        //Please Add Funds
+        //Press |   1   |  for $1.
+        //Press |   5   |  for $5.
+        //Press |   10  |  for $10.
+        //Press |   q   |  To Add Additional Snacks.
+
+    }
+
+    @Test
+    public void testTestAcceptFunds() throws Exception {
+        //GIVEN
+        Double fundsFromUser = 10.0;
+        vendingMachine.acceptFunds(fundsFromUser);
+        //WHEN
+        Double expected = 10.0;
+        Double actual = vendingMachine.getMoneyProvided();
+        System.out.println(actual);
+        //THEN
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTestEnoughFundingProvided() {
+        //GIVEN
+        vendingMachine.getMoneyProvided();
+        vendingMachine.setTotal(5.0);
+        System.out.println(vendingMachine.enoughFundingProvided());
+        //THEN
+        Assert.assertFalse(vendingMachine.enoughFundingProvided());
+    }
+
+    @Test
+    public void testCalculateChange() {
+        //GIVEN
+        vendingMachine.setMoneyProvided(10.0);
+        vendingMachine.setTotal(8.0);
+        //WHEN
+        Double expected = 2.0;
+        Double actual = vendingMachine.calculateChange();
+        System.out.println(actual);
+        //THEN
+        Assert.assertEquals(expected, actual);
+    }
+
+    @Test
+    public void testTransactionLogFile() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testLogFileForEachItemInCart() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testTestReturnChange() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testCheckForProduct() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testAddToCart() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testDisplayMessageAtCheckOut() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testTestDisplayVendingItems() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testStartVending() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testStartPurchase() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
+    }
+
+    @Test
+    public void testTestMain() {
+        //GIVEN
+
+        //WHEN
+
+        //THEN
     }
 }

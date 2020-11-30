@@ -1,22 +1,9 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
-import java.util.ArrayList;
-
 public class Chip extends Product {
-    private Integer quantity;
-
     public Chip(String nameIn, Double priceIn){
         super(nameIn, priceIn);
         msg = "Crunch Crunch, Yum!";
-        quantity = 5;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
     @Override

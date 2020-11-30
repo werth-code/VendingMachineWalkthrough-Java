@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class VendingMachine {
     private Scanner scanner;
-    private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory.
+    private Map<String, Integer> inventoryRemaining; //product code, number of items remaining in inventory
     private Map<String, Product> allProductsByID;
     private ArrayList<Product> cart = new ArrayList<>();
     private Double total = 0.00;
@@ -36,11 +36,26 @@ public class VendingMachine {
             });
         products.close();
     }
-
+    //// Testing Methods.
     public Map<String, Integer> getInventory() {
         return inventoryRemaining;
     }
-
+    public ArrayList<Product> getCart() {
+        return cart;
+    }
+    public Double getMoneyProvided() {
+        return moneyProvided;
+    }
+    public void setMoneyProvided(Double moneyProvided) {
+        this.moneyProvided = moneyProvided;
+    }
+    public Double getTotal() {
+        return total;
+    }
+    public void setTotal(Double total) {
+        this.total = total;
+    }
+    ////// Testing Methods.
 
     public void setIDtoProducts(String fileName) throws IOException {
         allProductsByID = new HashMap<>();
@@ -61,21 +76,33 @@ public class VendingMachine {
         products.close();
     }
 
+    public Map<String, Product> getAllProductsByID() {
+        return allProductsByID;
+    }
+
     public void getAllProductsForDisplay(String fileName) throws IOException {
         ArrayList<String> productDisplay = new ArrayList<>();
         allProductsByID.forEach((k,v) -> productDisplay.add(k + " " + v.toString()));
         productDisplay.stream().sorted().forEach(System.out::println);
     }
 
-    public String getIDtoTest(String value) {
-        return allProductsByID.get(value).toString();
-    }
 
     public Double calculateCartTotal() {
         for(Product item : cart) {
             total += item.getPrice();
         }
         return total;
+    }
+
+    public Boolean enoughFundingProvided() {
+        if (moneyProvided >= total) return true;
+        return false;
+    }
+
+    public Double calculateChange() {
+        Double change = 0.0;
+        if(moneyProvided > total) change = moneyProvided - total;
+        return change;
     }
 
     public ArrayList<String> setMenuOptions(String... options) {
@@ -86,7 +113,7 @@ public class VendingMachine {
         return menuOptions;
     }
 
-    // TODO: 11/30/20 These Should All Be One Method...
+    // TODO: 11/30/20 create 1 function for setting up 3 menus.
     public void startingMenu() {
         Menu startingMenu = new Menu(setMenuOptions("(1) Display Vending Items", "(2) Purchase", "(3) Exit"));
         for (String option : startingMenu.getOptions()) {
@@ -114,21 +141,11 @@ public class VendingMachine {
         return moneyProvided;
     }
 
-    public Boolean enoughFundingProvided() {
-        if (moneyProvided >= total) return true;
-        return false;
-    }
-
-    public Double calculateChange() {
-        Double change = 0.0;
-        if(moneyProvided > total) change = moneyProvided - total;
-        return change;
-    }
-
     public void transactionLogFile(String typeOfTransaction, Double amountBefore, Double amountAfter) throws IOException {
         File file = new File("log.txt");
         FileWriter writer = new FileWriter(file);
         Date date = new Date();
+
         receiptLineToWrite += ">" + date + " " + typeOfTransaction + ": $" + amountBefore + " $" + amountAfter + "\n";
 
         writer.write(receiptLineToWrite);
@@ -144,27 +161,25 @@ public class VendingMachine {
         }
     }
 
-    public String returnChange(Double change) {
-        Double amount = change;
+    public String returnChange(Double change) { //TODO weird rounding error in function...
         String changeString = "";
-
         Double quarters = 0.0, dimes = 0.0, nickels = 0.0;
 
-        while(amount > 0.0) {
-            if(amount - 1.00 > 0) {
-                amount -= 1.00;
+        while(change > 0.00) {
+            if(change - 1.00 > 0.00) {
+                change -= 1.00;
                 quarters += 4;
             }
-            else if(amount - 0.25 >= 0) {
-                amount -= 0.25;
+            else if(change - 0.25 >= 0.00) {
+                change -= 0.25;
                 quarters += 1;
             }
-            else if(amount - .10 >= 0) {
-                amount -= .10;
+            else if(change - 0.10 >= 0.00) {
+                change -= .10;
                 dimes += 1;
             }
-            else if (amount - .05 >= 0) {
-                amount -= .05;
+            else if (change - 0.05 >= -0.01) { /////////Hack
+                change -= .05;
                 nickels += 1;
             }
             else break;
@@ -174,7 +189,7 @@ public class VendingMachine {
         return changeString;
     }
 
-    public Boolean checkForProduct(String productID) { //inventoryRemaining
+    public Boolean checkForProduct(String productID) {
         if(inventoryRemaining.containsKey(productID) && inventoryRemaining.get(productID) > 0) { //if that choice exists and we have the inventory..
             return true;
         }
@@ -189,6 +204,7 @@ public class VendingMachine {
         Integer remainingStock = inventoryRemaining.get(usersProductChoice);
         inventoryRemaining.put(usersProductChoice, remainingStock - 1);
     }
+
     public void displayMessageAtCheckOut() {
         cart.forEach(ele-> System.out.println(ele.message()));
     }

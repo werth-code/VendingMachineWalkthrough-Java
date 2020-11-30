@@ -4,8 +4,6 @@ package com.codedifferently.walkthrough.vendingmachine.inventory;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
-
 // Creating a public testable class named GumTest.
 public class GumTest {
 
@@ -22,7 +20,7 @@ public class GumTest {
         Gum gumRef = new Gum(name, price);
 
         // When
-        String expected = "Big Red 0.25";
+        String expected = "Big Red $0.25";
         String actual = gumRef.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);

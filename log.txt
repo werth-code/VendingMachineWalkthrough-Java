@@ -1,4 +1,4 @@
->Mon Nov 30 11:27:45 EST 2020 Payment: $4.75 $5.0
->Mon Nov 30 11:27:45 EST 2020 Trident Mint: $2.5 $2.5
->Mon Nov 30 11:27:45 EST 2020 Reese’s PB Cups: $2.25 $0.25
->Mon Nov 30 11:27:45 EST 2020 Refund: $0.25 $5.0
+>Mon Nov 30 11:37:54 EST 2020 Payment: $5.0 $10.0
+>Mon Nov 30 11:37:54 EST 2020 Ice Breakers Sour Lemon: $2.5 $7.5
+>Mon Nov 30 11:37:54 EST 2020 Peanut M&M’s: $2.5 $5.0
+>Mon Nov 30 11:37:54 EST 2020 Refund: $5.0 $10.0

@@ -21,7 +21,7 @@ public class DrinkTest {
     public void drinkConstructorTest(){
         // Given
         // When
-        String expected = name + " " + price;
+        String expected = name + " $" + price;
         String actual = drink.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);
