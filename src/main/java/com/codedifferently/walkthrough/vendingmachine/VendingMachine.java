@@ -81,13 +81,6 @@ public class VendingMachine {
         return total;
     }
 
-    public Boolean checkForProduct(String productID) {
-        if(inventoryRemaining.containsKey(productID) && inventoryRemaining.get(productID) > 0) { //if that choice exists and we have the inventory..
-            return true;
-        }
-        return false;
-    }
-
     public ArrayList<String> setMenuOptions(String... options) {
         ArrayList<String> menuOptions = new ArrayList<>();
         for(String option : options) {
@@ -179,16 +172,22 @@ public class VendingMachine {
         cart = new ArrayList<>();
     }
 
+    public Boolean checkForProduct(String productID) {
+        if(allProductsByID.containsKey(productID) && allProductsByID.get(productID).getQuantity() > 0) { //if that choice exists and we have the inventory..
+            return true;
+        }
+        return false;
+    }
+
     public void addToCart(String usersProductChoice) {
         cart.add(allProductsByID.get(usersProductChoice));
+    }
+
+    public void removeFromInventory(String usersProductChoice) {
         Integer remainingStock = allProductsByID.get(usersProductChoice).getQuantity();
         allProductsByID.get(usersProductChoice).setQuantity(remainingStock - 1);
     }
 
-    public void removeFromInventory(String usersProductChoice) {
-        Integer currentItemNumberRemaining = inventoryRemaining.get(usersProductChoice);
-        inventoryRemaining.put(usersProductChoice, currentItemNumberRemaining -1);
-    }
 
     public void dispenseVendingItems() {
 
