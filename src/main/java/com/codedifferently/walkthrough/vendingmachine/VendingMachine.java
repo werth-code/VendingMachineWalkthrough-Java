@@ -104,7 +104,7 @@ public class VendingMachine {
     }
 
     public void acceptFundsMenu() {
-        Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   p   |  To Process Transaction.", "Press |   q   |  To Add Additional Snacks."));
+        Menu acceptFundsMenu = new Menu(setMenuOptions("Please Add Funds", "Press |   1   |  for $1.", "Press |   5   |  for $5.",  "Press |   10  |  for $10.", "Press |   q   |  To Add Additional Snacks."));
         for(String option : acceptFundsMenu.getOptions()) {
             System.out.println(option);
         }
@@ -221,10 +221,9 @@ public class VendingMachine {
     }
 
     public void startVending() throws Exception {
-        System.out.println("Welcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
+        System.out.println("\nWelcome To VenDifferently! We Have Dairy Free, GF, Nut Free & Vegan Snacks!");
 
         boolean flag = true;
-
         setInventory();
         setIDtoProducts("allProducts.txt");
 
@@ -233,10 +232,9 @@ public class VendingMachine {
             startingMenu();
             String input = scanner.next();
 
-            switch(input) { // We press 1 and want to see all products
+            switch(input) {
 
-                case "1" : // (1) Display Vending Items
-                    //total = 0.0;
+                case "1" :
                     displayVendingItems();
                     break;
 
@@ -253,7 +251,6 @@ public class VendingMachine {
                     break;
 
                 default:
-                    //startPurchase();
                     flag = false;
                     break;
             }
@@ -264,6 +261,7 @@ public class VendingMachine {
     // TODO: 11/28/20
     public void startPurchase() throws Exception {
         System.out.println("Your Total Is $" + customerTotal);
+        System.out.println("Cart: " + cart.toString());
 
         Boolean innerFlag = true;
 
@@ -275,10 +273,18 @@ public class VendingMachine {
             switch (checkoutInput) {
                 case "1": // (1) Feed Money
 
+                    System.out.println("Cart: " + cart.toString());
                     acceptFundsMenu();
+
+                    // TODO: 11/30/20 WHY is this not working!!!!
                     String fundsInput = scanner.next();
 
-                    acceptFunds(Double.parseDouble(fundsInput));
+                    if(fundsInput.equalsIgnoreCase("q")) {
+                        innerFlag = false;
+                        break;
+                    }
+                    else acceptFunds(Double.parseDouble(fundsInput));
+
                     System.out.println("You Have Added $" + moneyProvided);
 
                     transactionLogFile("Payment", 0.0, moneyProvided);
@@ -286,16 +292,9 @@ public class VendingMachine {
                     if (enoughFundingProvided()) {
                         System.out.println("...Dispensing Your Snacks!...");
 
-                        //// TODO: 11/30/20 Get actual products from our hashMap and return their message.
-                        // Should know exactly which items are being dispensed and return Object.message(), not sout.
-//                        if (cart.keySet().stream().anyMatch(a -> a.charAt(0) == 'A'))
-//                            System.out.println("Munch Munch, Yum!");
-//                        if (cart.keySet().stream().anyMatch(c -> c.charAt(0) == 'C'))
-//                            System.out.println("Crunch Crunch, Yum!");
-//                        if (cart.keySet().stream().anyMatch(d -> d.charAt(0) == 'D'))
-//                            System.out.println("Glug Glug, Yum!");
-//                        if (cart.keySet().stream().anyMatch(g -> g.charAt(0) == 'G'))
-//                            System.out.println("Chew Chew, Yum!");
+                        for(int i = 0; i < cart.size(); i++) {
+                            System.out.println(cart.get(i).message());
+                        }
 
                         Double change = calculateChange();
                         System.out.println(change);
@@ -310,13 +309,9 @@ public class VendingMachine {
                     }
                     else continue;
 
-                case "2":
-                    innerFlag = false;
-                    continue;
-
                 default:
-                    innerFlag = false;
-                    break;
+                    startVending();
+                    continue;
             }
         }
     }
