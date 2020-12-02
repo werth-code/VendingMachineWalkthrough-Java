@@ -1,10 +1,14 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
+import java.util.ArrayList;
+
 public class Drink extends Product {
+
     public Drink (String nameIn, Double priceIn){
         super(nameIn, priceIn);
         msg = "Glug Glug, Yum!";
     }
+
 
     @Override
     public String message() {

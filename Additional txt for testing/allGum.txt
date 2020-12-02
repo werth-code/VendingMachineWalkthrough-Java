@@ -1,0 +1,8 @@
+G1|Trident Mint|2.50
+G2|Trident Cinnamon|2.50
+G3|Ice Breakers Sour Lemon|2.50
+G4|Ice Breakers Bubble Gum|2.50
+G5|Dentyne Spearmint Tub|4.50
+G6|Dentyne Classic Mint Tub|4.50
+G7|Juicy Fruit Classic|3.00
+G8|TicTac Orange|2.00

@@ -1,0 +1,4 @@
+>Mon Nov 30 11:37:54 EST 2020 Payment: $5.0 $10.0
+>Mon Nov 30 11:37:54 EST 2020 Ice Breakers Sour Lemon: $2.5 $7.5
+>Mon Nov 30 11:37:54 EST 2020 Peanut M&M’s: $2.5 $5.0
+>Mon Nov 30 11:37:54 EST 2020 Refund: $5.0 $10.0

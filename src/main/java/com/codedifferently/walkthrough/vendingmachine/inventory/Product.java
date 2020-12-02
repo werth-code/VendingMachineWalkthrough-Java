@@ -1,5 +1,8 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
+import java.io.IOException;
+import java.util.ArrayList;
+
 public abstract class Product {
 
     private String name;
@@ -21,8 +24,9 @@ public abstract class Product {
 
     @Override
     public String toString(){
-        return name + " " + price;
+        return name + " $" + price;
     }
 
     public abstract String message();
+
 }

@@ -20,11 +20,22 @@ public class GumTest {
         Gum gumRef = new Gum(name, price);
 
         // When
-        String expected = "Big Red 0.25";
+        String expected = "Big Red $0.25";
         String actual = gumRef.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);
     }
+
+//    @Test
+//    public void setIndividualProductMenuTest(){
+//        //Given
+//
+//        //When
+//        ArrayList<Product> actual = setIndividualProductMenu("allGum.txt");
+//        //Then
+//        Assert.assertEquals(actual[0], "gobble wobble");
+//    }
+
 
     // Here we are creating a new object from Gum without passing any arguments into the constructor.
     // This should create a new Gum object using our default values from Gum class.

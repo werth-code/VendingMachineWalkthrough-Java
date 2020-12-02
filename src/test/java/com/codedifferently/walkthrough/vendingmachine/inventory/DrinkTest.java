@@ -8,6 +8,7 @@ import org.junit.Test;
 public class DrinkTest {
 
     Drink drink;
+    String id = "A1";
     String name = "Cola";
     Double price = 0.50;
 
@@ -20,7 +21,7 @@ public class DrinkTest {
     public void drinkConstructorTest(){
         // Given
         // When
-        String expected = name + " " + price;
+        String expected = name + " $" + price;
         String actual = drink.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);

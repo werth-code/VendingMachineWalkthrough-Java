@@ -1,6 +1,5 @@
 package com.codedifferently.walkthrough.vendingmachine.inventory;
 
-import junit.framework.TestCase;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,7 +19,7 @@ public class CandyTest {
     public void candyConstructorTest(){
         // Given
         // When
-        String expected = name + " " + price;
+        String expected = name + " $" + price;
         String actual = candy.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);

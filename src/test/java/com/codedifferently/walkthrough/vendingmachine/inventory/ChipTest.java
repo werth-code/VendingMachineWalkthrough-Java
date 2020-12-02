@@ -20,7 +20,7 @@ public class ChipTest {
     public void drinkConstructorTest(){
         // Given
         // When
-        String expected = name + " " + price;
+        String expected = name + " $" + price;
         String actual = chip.toString();
         // Then
         Assert.assertEquals("Constructor test",expected, actual);

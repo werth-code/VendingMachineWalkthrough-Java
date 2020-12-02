@@ -1,0 +1,8 @@
+C1|Kettle Original Potato Chips|3.00 
+C2|Herr’s BBQ|2.00
+C3|EnjoyLife Lentil Chips|3.00
+C4|Mozaics Organic Veggie Chips|3.00
+C5|Lance Gluten Free Crackers|3.00
+C6|Cheetos Original|2.25
+C7|Snyders Gluten Free Pretzels|2.50
+C8|Snyders Original Pretzels|2.25
